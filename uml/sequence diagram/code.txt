@@ -1,0 +1,20 @@
+@startuml
+actor 主持人
+participant "投票页" as VoteUI
+participant "GameProvider" as Provider
+participant "游戏状态" as Game
+participant "玩家列表" as Players
+
+主持人 -> VoteUI: 选择玩家并确认淘汰
+VoteUI -> Provider: eliminatePlayer(playerId)
+Provider -> Game: 获取玩家对象
+Game -> Players: 更新 isAlive = false
+Provider -> Game: checkGameOver()
+Game --> Provider: 返回胜负结果(平民赢/卧底赢)
+alt 游戏结束
+  Provider -> VoteUI: 游戏结束，显示结果弹窗
+else 游戏继续
+  Provider -> VoteUI: 刷新存活玩家列表
+  VoteUI --> 主持人: 显示更新后的玩家
+end
+@enduml
