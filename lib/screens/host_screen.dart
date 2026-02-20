@@ -55,40 +55,28 @@ class _HostScreenState extends State<HostScreen> {
   }
 
   Future<void> _nextPlayer() async {
-    final aliveIndices = <int>[];
-    for (int index = 0; index < players.length; index++) {
-      if (players[index].isAlive) {
-        aliveIndices.add(index);
-      }
-    }
-
-    if (aliveIndices.isEmpty) return;
-
-    final currentAlivePosition = aliveIndices.indexOf(currentIndex);
-    if (currentAlivePosition == -1) {
-      setState(() {
-        currentIndex = aliveIndices.first;
-        _isWordVisible = false;
-      });
-      return;
-    }
-
-    final isLastAlivePlayer = currentAlivePosition == aliveIndices.length - 1;
-    if (isLastAlivePlayer) {
-      await Navigator.pushAndRemoveUntil<void>(
-        context,
-        MaterialPageRoute(
-          builder: (context) => VoteScreen(players: players),
-        ),
-        (route) => route.isFirst,
+    final isLastPlayer = currentIndex >= players.length - 1;
+    if (isLastPlayer) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('所有玩家都已查看词汇')),
       );
       return;
     }
 
     setState(() {
-      currentIndex = aliveIndices[currentAlivePosition + 1];
+      currentIndex += 1;
       _isWordVisible = false;
     });
+  }
+
+  Future<void> _startGame() async {
+    await Navigator.pushReplacement<void, void>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => VoteScreen(players: players),
+      ),
+    );
   }
 
   @override
@@ -96,7 +84,7 @@ class _HostScreenState extends State<HostScreen> {
     if (_isLoading) {
       return Scaffold(
         appBar: AppBar(
-          title: Text('游戏进行中'),
+          title: Text('查看词汇'),
         ),
         body: Center(
           child: CircularProgressIndicator(),
@@ -107,7 +95,7 @@ class _HostScreenState extends State<HostScreen> {
     if (_loadError != null) {
       return Scaffold(
         appBar: AppBar(
-          title: Text('游戏进行中'),
+          title: Text('查看词汇'),
         ),
         body: Center(
           child: Padding(
@@ -137,7 +125,7 @@ class _HostScreenState extends State<HostScreen> {
     if (players.isEmpty) {
       return Scaffold(
         appBar: AppBar(
-          title: Text('游戏进行中'),
+          title: Text('查看词汇'),
         ),
         body: Center(
           child: Text('没有可用玩家数据'),
@@ -147,21 +135,16 @@ class _HostScreenState extends State<HostScreen> {
 
     final colorScheme = Theme.of(context).colorScheme;
     final player = players[currentIndex];
-    final aliveCount = players.where((p) => p.isAlive).length;
+    final isLastPlayer = currentIndex >= players.length - 1;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('游戏进行中'),
+        title: Text('查看词汇'),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
-              '存活人数: $aliveCount / ${players.length}',
-              style: TextStyle(fontSize: 20),
-            ),
-            SizedBox(height: 20),
             Text(
               '当前玩家: ${player.name}',
               style: TextStyle(fontSize: 24),
@@ -190,11 +173,15 @@ class _HostScreenState extends State<HostScreen> {
               ),
             SizedBox(height: 60),
             ElevatedButton(
-              onPressed: _isWordVisible ? _nextPlayer : null,
+              onPressed: !_isWordVisible
+                  ? null
+                  : isLastPlayer
+                      ? _startGame
+                      : _nextPlayer,
               style: ElevatedButton.styleFrom(
                 padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
               ),
-              child: Text('确认，下一位'),
+              child: Text(isLastPlayer ? '开始游戏' : '确认，下一位'),
             ),
           ],
         ),
