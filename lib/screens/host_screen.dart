@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/game_models.dart';
 import '../services/game_service.dart';
+import 'vote_screen.dart';
 
 class HostScreen extends StatefulWidget {
   final int playerCount;
@@ -13,12 +14,13 @@ class HostScreen extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _HostScreenState createState() => _HostScreenState();
+  State<HostScreen> createState() => _HostScreenState();
 }
 
 class _HostScreenState extends State<HostScreen> {
   late List<Player> players;
   int currentIndex = 0;
+  bool _isWordVisible = false;
 
   @override
   void initState() {
@@ -30,19 +32,46 @@ class _HostScreenState extends State<HostScreen> {
     );
   }
 
-  void _nextPlayer() {
+  Future<void> _nextPlayer() async {
+    final aliveIndices = <int>[];
+    for (int index = 0; index < players.length; index++) {
+      if (players[index].isAlive) {
+        aliveIndices.add(index);
+      }
+    }
+
+    if (aliveIndices.isEmpty) return;
+
+    final currentAlivePosition = aliveIndices.indexOf(currentIndex);
+    if (currentAlivePosition == -1) {
+      setState(() {
+        currentIndex = aliveIndices.first;
+        _isWordVisible = false;
+      });
+      return;
+    }
+
+    final isLastAlivePlayer = currentAlivePosition == aliveIndices.length - 1;
+    if (isLastAlivePlayer) {
+      await Navigator.pushAndRemoveUntil<void>(
+        context,
+        MaterialPageRoute(
+          builder: (context) => VoteScreen(players: players),
+        ),
+        (route) => route.isFirst,
+      );
+      return;
+    }
+
     setState(() {
-      // 寻找下一个存活的玩家
-      int nextIndex = currentIndex;
-      do {
-        nextIndex = (nextIndex + 1) % players.length;
-      } while (!players[nextIndex].isAlive && nextIndex != currentIndex);
-      currentIndex = nextIndex;
+      currentIndex = aliveIndices[currentAlivePosition + 1];
+      _isWordVisible = false;
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     final player = players[currentIndex];
     final aliveCount = players.where((p) => p.isAlive).length;
 
@@ -67,35 +96,31 @@ class _HostScreenState extends State<HostScreen> {
             Container(
               padding: EdgeInsets.all(20),
               decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey),
+                border: Border.all(color: colorScheme.outlineVariant),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
-                player.word,
+                _isWordVisible ? player.word : '???',
                 style: TextStyle(fontSize: 60, fontWeight: FontWeight.bold),
               ),
             ),
             SizedBox(height: 20),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-              decoration: BoxDecoration(
-                color: player.role == GameRole.undercover
-                    ? Colors.red[100]
-                    : Colors.green[100],
-                borderRadius: BorderRadius.circular(20),
+            if (!_isWordVisible)
+              ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    _isWordVisible = true;
+                  });
+                },
+                child: Text('点击查看词汇'),
               ),
-              child: Text(
-                player.role == GameRole.undercover ? '卧底' : '平民',
-                style: TextStyle(fontSize: 18),
-              ),
-            ),
             SizedBox(height: 60),
             ElevatedButton(
-              onPressed: _nextPlayer,
-              child: Text('确认，下一位'),
+              onPressed: _isWordVisible ? _nextPlayer : null,
               style: ElevatedButton.styleFrom(
                 padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
               ),
+              child: Text('确认，下一位'),
             ),
           ],
         ),
