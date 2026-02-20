@@ -15,4 +15,9 @@ class Player {
     required this.word,
     this.isAlive = true,
   });
+
+  Player copy()
+  {
+    return Player(id: id, name: name, role: role, word: word, isAlive: isAlive);
+  }
 }
