@@ -1,0 +1,30 @@
+{
+    "category":  "饮品",
+    "difficulty":  "easy",
+    "pairs":  [
+                  {
+                      "civilian":  "咖啡",
+                      "undercover":  "奶茶"
+                  },
+                  {
+                      "civilian":  "可乐",
+                      "undercover":  "雪碧"
+                  },
+                  {
+                      "civilian":  "牛奶",
+                      "undercover":  "酸奶"
+                  },
+                  {
+                      "civilian":  "豆浆",
+                      "undercover":  "豆奶"
+                  },
+                  {
+                      "civilian":  "果汁",
+                      "undercover":  "汽水"
+                  },
+                  {
+                      "civilian":  "热水",
+                      "undercover":  "温水"
+                  }
+              ]
+}

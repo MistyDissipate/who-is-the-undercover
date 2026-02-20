@@ -1,0 +1,30 @@
+{
+    "category":  "运动",
+    "difficulty":  "easy",
+    "pairs":  [
+                  {
+                      "civilian":  "篮球",
+                      "undercover":  "足球"
+                  },
+                  {
+                      "civilian":  "羽毛球",
+                      "undercover":  "网球"
+                  },
+                  {
+                      "civilian":  "乒乓球",
+                      "undercover":  "排球"
+                  },
+                  {
+                      "civilian":  "跑步",
+                      "undercover":  "跳绳"
+                  },
+                  {
+                      "civilian":  "游泳",
+                      "undercover":  "潜水"
+                  },
+                  {
+                      "civilian":  "滑冰",
+                      "undercover":  "滑雪"
+                  }
+              ]
+}

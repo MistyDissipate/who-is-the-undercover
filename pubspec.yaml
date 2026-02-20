@@ -60,6 +60,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/word_pairs.json
+    - assets/wordbanks/
 
   # To add assets to your application, add an assets section, like this:
   # assets:

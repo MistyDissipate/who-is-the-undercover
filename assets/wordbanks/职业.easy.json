@@ -1,0 +1,30 @@
+{
+    "category":  "职业",
+    "difficulty":  "easy",
+    "pairs":  [
+                  {
+                      "civilian":  "老师",
+                      "undercover":  "医生"
+                  },
+                  {
+                      "civilian":  "警察",
+                      "undercover":  "消防员"
+                  },
+                  {
+                      "civilian":  "厨师",
+                      "undercover":  "面点师"
+                  },
+                  {
+                      "civilian":  "司机",
+                      "undercover":  "飞行员"
+                  },
+                  {
+                      "civilian":  "画家",
+                      "undercover":  "设计师"
+                  },
+                  {
+                      "civilian":  "农民",
+                      "undercover":  "园丁"
+                  }
+              ]
+}

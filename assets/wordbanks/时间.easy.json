@@ -1,0 +1,18 @@
+{
+    "category":  "时间",
+    "difficulty":  "easy",
+    "pairs":  [
+                  {
+                      "civilian":  "白天",
+                      "undercover":  "黑夜"
+                  },
+                  {
+                      "civilian":  "早上",
+                      "undercover":  "晚上"
+                  },
+                  {
+                      "civilian":  "今天",
+                      "undercover":  "明天"
+                  }
+              ]
+}

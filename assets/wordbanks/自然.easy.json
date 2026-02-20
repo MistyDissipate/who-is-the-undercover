@@ -1,0 +1,22 @@
+{
+    "category":  "自然",
+    "difficulty":  "easy",
+    "pairs":  [
+                  {
+                      "civilian":  "太阳",
+                      "undercover":  "月亮"
+                  },
+                  {
+                      "civilian":  "云朵",
+                      "undercover":  "雾"
+                  },
+                  {
+                      "civilian":  "彩虹",
+                      "undercover":  "晚霞"
+                  },
+                  {
+                      "civilian":  "大海",
+                      "undercover":  "湖"
+                  }
+              ]
+}

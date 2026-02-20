@@ -1,0 +1,22 @@
+{
+    "category":  "文具",
+    "difficulty":  "easy",
+    "pairs":  [
+                  {
+                      "civilian":  "铅笔",
+                      "undercover":  "自动铅笔"
+                  },
+                  {
+                      "civilian":  "橡皮",
+                      "undercover":  "修正带"
+                  },
+                  {
+                      "civilian":  "尺子",
+                      "undercover":  "三角尺"
+                  },
+                  {
+                      "civilian":  "书包",
+                      "undercover":  "文具盒"
+                  }
+              ]
+}

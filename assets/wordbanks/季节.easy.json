@@ -1,0 +1,14 @@
+{
+    "category":  "季节",
+    "difficulty":  "easy",
+    "pairs":  [
+                  {
+                      "civilian":  "春天",
+                      "undercover":  "秋天"
+                  },
+                  {
+                      "civilian":  "夏天",
+                      "undercover":  "冬天"
+                  }
+              ]
+}

@@ -1,0 +1,95 @@
+{
+    "version":  1,
+    "files":  [
+                  {
+                      "path":  "assets/wordbanks/食物.easy.json",
+                      "category":  "食物",
+                      "difficulty":  "easy",
+                      "enabled":  true
+                  },
+                  {
+                      "path":  "assets/wordbanks/娱乐.easy.json",
+                      "category":  "娱乐",
+                      "difficulty":  "easy",
+                      "enabled":  true
+                  },
+                  {
+                      "path":  "assets/wordbanks/数码.easy.json",
+                      "category":  "数码",
+                      "difficulty":  "easy",
+                      "enabled":  true
+                  },
+                  {
+                      "path":  "assets/wordbanks/文具.easy.json",
+                      "category":  "文具",
+                      "difficulty":  "easy",
+                      "enabled":  true
+                  },
+                  {
+                      "path":  "assets/wordbanks/自然.easy.json",
+                      "category":  "自然",
+                      "difficulty":  "easy",
+                      "enabled":  true
+                  },
+                  {
+                      "path":  "assets/wordbanks/日用品.easy.json",
+                      "category":  "日用品",
+                      "difficulty":  "easy",
+                      "enabled":  true
+                  },
+                  {
+                      "path":  "assets/wordbanks/校园.easy.json",
+                      "category":  "校园",
+                      "difficulty":  "easy",
+                      "enabled":  true
+                  },
+                  {
+                      "path":  "assets/wordbanks/时间.easy.json",
+                      "category":  "时间",
+                      "difficulty":  "easy",
+                      "enabled":  true
+                  },
+                  {
+                      "path":  "assets/wordbanks/动物.easy.json",
+                      "category":  "动物",
+                      "difficulty":  "easy",
+                      "enabled":  true
+                  },
+                  {
+                      "path":  "assets/wordbanks/水果.easy.json",
+                      "category":  "水果",
+                      "difficulty":  "easy",
+                      "enabled":  true
+                  },
+                  {
+                      "path":  "assets/wordbanks/饮品.easy.json",
+                      "category":  "饮品",
+                      "difficulty":  "easy",
+                      "enabled":  true
+                  },
+                  {
+                      "path":  "assets/wordbanks/交通.easy.json",
+                      "category":  "交通",
+                      "difficulty":  "easy",
+                      "enabled":  true
+                  },
+                  {
+                      "path":  "assets/wordbanks/季节.easy.json",
+                      "category":  "季节",
+                      "difficulty":  "easy",
+                      "enabled":  true
+                  },
+                  {
+                      "path":  "assets/wordbanks/职业.easy.json",
+                      "category":  "职业",
+                      "difficulty":  "easy",
+                      "enabled":  true
+                  },
+                  {
+                      "path":  "assets/wordbanks/运动.easy.json",
+                      "category":  "运动",
+                      "difficulty":  "easy",
+                      "enabled":  true
+                  }
+              ]
+}

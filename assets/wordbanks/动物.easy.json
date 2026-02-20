@@ -1,0 +1,30 @@
+{
+    "category":  "动物",
+    "difficulty":  "easy",
+    "pairs":  [
+                  {
+                      "civilian":  "猫",
+                      "undercover":  "狗"
+                  },
+                  {
+                      "civilian":  "狮子",
+                      "undercover":  "老虎"
+                  },
+                  {
+                      "civilian":  "兔子",
+                      "undercover":  "松鼠"
+                  },
+                  {
+                      "civilian":  "熊猫",
+                      "undercover":  "考拉"
+                  },
+                  {
+                      "civilian":  "海豚",
+                      "undercover":  "鲸鱼"
+                  },
+                  {
+                      "civilian":  "乌龟",
+                      "undercover":  "青蛙"
+                  }
+              ]
+}

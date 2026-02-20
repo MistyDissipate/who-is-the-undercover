@@ -1,0 +1,22 @@
+{
+    "category":  "校园",
+    "difficulty":  "easy",
+    "pairs":  [
+                  {
+                      "civilian":  "黑板",
+                      "undercover":  "白板"
+                  },
+                  {
+                      "civilian":  "教室",
+                      "undercover":  "图书馆"
+                  },
+                  {
+                      "civilian":  "操场",
+                      "undercover":  "体育馆"
+                  },
+                  {
+                      "civilian":  "课本",
+                      "undercover":  "练习册"
+                  }
+              ]
+}

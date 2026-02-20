@@ -1,0 +1,26 @@
+{
+    "category":  "数码",
+    "difficulty":  "easy",
+    "pairs":  [
+                  {
+                      "civilian":  "手机",
+                      "undercover":  "平板"
+                  },
+                  {
+                      "civilian":  "键盘",
+                      "undercover":  "鼠标"
+                  },
+                  {
+                      "civilian":  "耳机",
+                      "undercover":  "音箱"
+                  },
+                  {
+                      "civilian":  "相机",
+                      "undercover":  "摄像机"
+                  },
+                  {
+                      "civilian":  "手表",
+                      "undercover":  "闹钟"
+                  }
+              ]
+}

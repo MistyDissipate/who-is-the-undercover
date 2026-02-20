@@ -1,0 +1,26 @@
+{
+    "category":  "娱乐",
+    "difficulty":  "easy",
+    "pairs":  [
+                  {
+                      "civilian":  "电影",
+                      "undercover":  "电视剧"
+                  },
+                  {
+                      "civilian":  "唱歌",
+                      "undercover":  "跳舞"
+                  },
+                  {
+                      "civilian":  "魔术",
+                      "undercover":  "杂技"
+                  },
+                  {
+                      "civilian":  "拼图",
+                      "undercover":  "积木"
+                  },
+                  {
+                      "civilian":  "动画片",
+                      "undercover":  "漫画"
+                  }
+              ]
+}
