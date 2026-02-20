@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:uncover_agent/screens/host_screen.dart';
 
 class SetupScreen extends StatefulWidget {
   const SetupScreen({super.key});
@@ -89,7 +90,16 @@ class _SetupScreenState extends State<SetupScreen> {
               ),
               ElevatedButton(
                 onPressed: () {
-                  Navigator.pushNamed(context, '/host');
+                  // 确保可以开始游戏的逻辑（比如 canStartGame）
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => HostScreen(
+                        playerCount: playerNum,
+                        undercoverCount: undercoverNum,
+                      ),
+                    ),
+                  );
                 },
                 child: Text('开始游戏'),
               )
