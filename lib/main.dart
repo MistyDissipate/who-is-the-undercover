@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => setup.SetupScreen(),
-        '/host': (context) => host.HostScreen(),
+        
         // 后续可以添加 '/vote' 等
       },
     );
