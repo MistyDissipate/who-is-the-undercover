@@ -1,6 +1,6 @@
 {
-    "name": "uncover_agent",
-    "short_name": "uncover_agent",
+    "name": "谁是卧底助手",
+    "short_name": "谁是卧底助手",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#ffffff",
