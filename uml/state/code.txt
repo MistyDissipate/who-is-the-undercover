@@ -1,15 +1,30 @@
 @startuml
 state "设置页" as Setup
-state "游戏主持页" as Host
+state "主持页" as Host {
+	state "加载中" as HostLoading
+	state "加载失败" as HostError
+	state "看词流程" as HostFlow {
+		state "词汇隐藏(???)" as Masked
+		state "词汇已显示" as Revealed
+
+		[*] --> Masked
+		Masked --> Revealed : 点击查看词汇
+		Revealed --> Masked : 确认，下一位\n[非最后一位]
+	}
+
+	[*] --> HostLoading
+	HostLoading --> HostFlow : 词库加载成功\n并生成玩家
+	HostLoading --> HostError : 词库加载失败
+	HostError --> HostLoading : 点击重试
+}
 state "投票页" as Vote
-state "结果弹窗" as Result
+state "结算弹窗" as Result
 
 [*] --> Setup : 打开App
-
-Setup --> Host : 开始游戏(玩家数,卧底数)
-Host --> Host : 下一玩家\n(切换当前显示)
-Host --> Vote : 点击投票(可选)
-Vote --> Host : 确认淘汰\n(若游戏未结束)
-Host --> Result : 游戏结束\n(胜负已分)
-Result --> Setup : 再玩一局
+Setup --> Host : 开始游戏
+Host --> Vote : 最后一位点击“开始游戏”
+Vote --> Vote : 淘汰1名存活玩家\n(游戏未结束)
+Vote --> Result : 满足胜负条件
+Result --> Setup : 返回首页
+Result --> Host : 再来一局
 @enduml

@@ -1,20 +1,40 @@
 @startuml
-actor 主持人
-participant "投票页" as VoteUI
-participant "GameProvider" as Provider
-participant "游戏状态" as Game
-participant "玩家列表" as Players
+actor "组织者/玩家" as User
+participant "SetupScreen" as Setup
+participant "HostScreen" as Host
+participant "GameService" as GameSvc
+participant "WordPoolService" as WordSvc
+participant "VoteScreen" as Vote
 
-主持人 -> VoteUI: 选择玩家并确认淘汰
-VoteUI -> Provider: eliminatePlayer(playerId)
-Provider -> Game: 获取玩家对象
-Game -> Players: 更新 isAlive = false
-Provider -> Game: checkGameOver()
-Game --> Provider: 返回胜负结果(平民赢/卧底赢)
-alt 游戏结束
-  Provider -> VoteUI: 游戏结束，显示结果弹窗
-else 游戏继续
-  Provider -> VoteUI: 刷新存活玩家列表
-  VoteUI --> 主持人: 显示更新后的玩家
+User -> Setup: 设置玩家数/卧底数/筛选条件
+User -> Setup: 点击“开始游戏”
+Setup -> Host: Navigator.push(...)
+
+Host -> GameSvc: createPlayersFromWordPool(...)
+GameSvc -> WordSvc: getRandomPair(...)
+WordSvc --> GameSvc: 返回词对
+GameSvc --> Host: 返回 players
+
+loop 每位玩家看词
+  User -> Host: 点击“点击查看词汇”
+  Host --> User: 显示真实词汇
+  alt 非最后一位
+    User -> Host: 点击“确认，下一位”
+    Host --> Host: currentIndex++, 词汇重置为???
+  else 最后一位
+    User -> Host: 点击“开始游戏”
+    Host -> Vote: Navigator.pushReplacement(players)
+  end
+end
+
+loop 投票回合
+  User -> Vote: 选择存活玩家并确认淘汰
+  Vote --> Vote: 更新 isAlive=false
+  Vote --> Vote: 检查胜负条件
+  alt 游戏结束
+    Vote --> User: 显示结算弹窗(胜利方+全员身份词汇)
+  else 游戏继续
+    Vote --> User: 刷新存活玩家列表
+  end
 end
 @enduml
