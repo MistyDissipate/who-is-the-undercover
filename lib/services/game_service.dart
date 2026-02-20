@@ -1,36 +1,42 @@
 import 'dart:math';
 import '../models/game_models.dart';
+import 'word_pool_service.dart';
 
 class GameService {
-  static List<Player> createMockPlayers(int playerCount, int undercoverCount) {
-    // 无词库，目前分配固定词对
-    const civilianWord = '苹果';
-    const undercoverWord = '香蕉';
+  static Future<List<Player>> createPlayersFromWordPool(
+    int playerCount,
+    int undercoverCount,
+  ) async {
+    if (playerCount <= 0) {
+      throw ArgumentError('playerCount 必须大于 0');
+    }
+    if (undercoverCount <= 0 || undercoverCount >= playerCount) {
+      throw ArgumentError('undercoverCount 必须在 1 到 playerCount-1 之间');
+    }
 
-    // 生成玩家列表
-    List<Player> players = List.generate(playerCount, (index) {
+    final wordPair = await WordPoolService.getRandomPair();
+
+    final players = List.generate(playerCount, (index) {
       return Player(
         id: index,
         name: '玩家${index + 1}',
-        role: GameRole.civilian, // 先默认平民
-        word: civilianWord,
+        role: GameRole.civilian,
+        word: wordPair.civilian,
       );
     });
 
-    // 随机选择卧底索引
     final random = Random();
-    Set<int> undercoverIndices = {};
+    final undercoverIndices = <int>{};
     while (undercoverIndices.length < undercoverCount) {
       undercoverIndices.add(random.nextInt(playerCount));
     }
 
-    // 设置卧底
-    for (int index in undercoverIndices) {
+    for (final index in undercoverIndices) {
       players[index] = Player(
         id: players[index].id,
         name: players[index].name,
         role: GameRole.undercover,
-        word: undercoverWord,
+        word: wordPair.undercover,
         isAlive: true,
       );
     }

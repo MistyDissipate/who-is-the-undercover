@@ -1,0 +1,24 @@
+{
+  "pairs": [
+    { "civilian": "咖啡", "undercover": "奶茶", "category": "饮品" },
+    { "civilian": "可乐", "undercover": "雪碧", "category": "饮品" },
+    { "civilian": "苹果", "undercover": "梨", "category": "水果" },
+    { "civilian": "草莓", "undercover": "樱桃", "category": "水果" },
+    { "civilian": "猫", "undercover": "狗", "category": "动物" },
+    { "civilian": "狮子", "undercover": "老虎", "category": "动物" },
+    { "civilian": "飞机", "undercover": "高铁", "category": "交通" },
+    { "civilian": "地铁", "undercover": "公交", "category": "交通" },
+    { "civilian": "篮球", "undercover": "足球", "category": "运动" },
+    { "civilian": "羽毛球", "undercover": "网球", "category": "运动" },
+    { "civilian": "老师", "undercover": "医生", "category": "职业" },
+    { "civilian": "警察", "undercover": "消防员", "category": "职业" },
+    { "civilian": "春天", "undercover": "秋天", "category": "季节" },
+    { "civilian": "白天", "undercover": "黑夜", "category": "时间" },
+    { "civilian": "手机", "undercover": "平板", "category": "数码" },
+    { "civilian": "键盘", "undercover": "鼠标", "category": "数码" },
+    { "civilian": "电影", "undercover": "电视剧", "category": "娱乐" },
+    { "civilian": "唱歌", "undercover": "跳舞", "category": "娱乐" },
+    { "civilian": "汉堡", "undercover": "披萨", "category": "食物" },
+    { "civilian": "米饭", "undercover": "面条", "category": "食物" }
+  ]
+}
