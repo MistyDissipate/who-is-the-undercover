@@ -1,22 +1,38 @@
 {
-    "category":  "文具",
-    "difficulty":  "easy",
-    "pairs":  [
-                  {
-                      "civilian":  "铅笔",
-                      "undercover":  "自动铅笔"
-                  },
-                  {
-                      "civilian":  "橡皮",
-                      "undercover":  "修正带"
-                  },
-                  {
-                      "civilian":  "尺子",
-                      "undercover":  "三角尺"
-                  },
-                  {
-                      "civilian":  "书包",
-                      "undercover":  "文具盒"
-                  }
-              ]
+    "category": "文具",
+    "difficulty": "easy",
+    "pairs": [
+        {
+            "civilian": "2B铅笔",
+            "undercover": "自动铅笔"
+        },
+        {
+            "civilian": "橡皮",
+            "undercover": "修正带"
+        },
+        {
+            "civilian": "尺子",
+            "undercover": "三角尺"
+        },
+        {
+            "civilian": "书包",
+            "undercover": "文具盒"
+        },
+        {
+            "civilian": "圆珠笔",
+            "undercover": "中性笔"
+        },
+        {
+            "civilian": "卷笔刀",
+            "undercover": "削笔刀"
+        },
+        {
+            "civilian": "胶水",
+            "undercover": "双面胶"
+        },
+        {
+            "civilian": "作业本",
+            "undercover": "草稿本"
+        }
+    ]
 }

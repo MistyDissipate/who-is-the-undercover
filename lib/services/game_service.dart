@@ -6,6 +6,10 @@ class GameService {
   static Future<List<Player>> createPlayersFromWordPool(
     int playerCount,
     int undercoverCount,
+    {
+      Set<String>? categories,
+      Set<String>? difficulties,
+    }
   ) async {
     if (playerCount <= 0) {
       throw ArgumentError('playerCount 必须大于 0');
@@ -14,7 +18,10 @@ class GameService {
       throw ArgumentError('undercoverCount 必须在 1 到 playerCount-1 之间');
     }
 
-    final wordPair = await WordPoolService.getRandomPair();
+    final wordPair = await WordPoolService.getRandomPair(
+      categories: categories,
+      difficulties: difficulties,
+    );
 
     final players = List.generate(playerCount, (index) {
       return Player(

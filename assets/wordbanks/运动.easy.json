@@ -1,30 +1,50 @@
 {
-    "category":  "运动",
-    "difficulty":  "easy",
-    "pairs":  [
-                  {
-                      "civilian":  "篮球",
-                      "undercover":  "足球"
-                  },
-                  {
-                      "civilian":  "羽毛球",
-                      "undercover":  "网球"
-                  },
-                  {
-                      "civilian":  "乒乓球",
-                      "undercover":  "排球"
-                  },
-                  {
-                      "civilian":  "跑步",
-                      "undercover":  "跳绳"
-                  },
-                  {
-                      "civilian":  "游泳",
-                      "undercover":  "潜水"
-                  },
-                  {
-                      "civilian":  "滑冰",
-                      "undercover":  "滑雪"
-                  }
-              ]
+    "category": "运动",
+    "difficulty": "easy",
+    "pairs": [
+        {
+            "civilian": "篮球",
+            "undercover": "足球"
+        },
+        {
+            "civilian": "羽毛球",
+            "undercover": "网球"
+        },
+        {
+            "civilian": "乒乓球",
+            "undercover": "排球"
+        },
+        {
+            "civilian": "跑步",
+            "undercover": "跳绳"
+        },
+        {
+            "civilian": "游泳",
+            "undercover": "潜水"
+        },
+        {
+            "civilian": "滑冰",
+            "undercover": "滑雪"
+        },
+        {
+            "civilian": "仰卧起坐",
+            "undercover": "做俯卧撑"
+        },
+        {
+            "civilian": "踢毽子",
+            "undercover": "丢沙包"
+        },
+        {
+            "civilian": "接力跑",
+            "undercover": "障碍跑"
+        },
+        {
+            "civilian": "体操",
+            "undercover": "武术"
+        },
+        {
+            "civilian": "倒立",
+            "undercover": "金鸡独立"
+        }
+    ]
 }

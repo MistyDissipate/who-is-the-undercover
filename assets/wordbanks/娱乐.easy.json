@@ -1,26 +1,42 @@
 {
-    "category":  "娱乐",
-    "difficulty":  "easy",
-    "pairs":  [
-                  {
-                      "civilian":  "电影",
-                      "undercover":  "电视剧"
-                  },
-                  {
-                      "civilian":  "唱歌",
-                      "undercover":  "跳舞"
-                  },
-                  {
-                      "civilian":  "魔术",
-                      "undercover":  "杂技"
-                  },
-                  {
-                      "civilian":  "拼图",
-                      "undercover":  "积木"
-                  },
-                  {
-                      "civilian":  "动画片",
-                      "undercover":  "漫画"
-                  }
-              ]
+    "category": "娱乐",
+    "difficulty": "easy",
+    "pairs": [
+        {
+            "civilian": "电影",
+            "undercover": "电视剧"
+        },
+        {
+            "civilian": "唱歌",
+            "undercover": "跳舞"
+        },
+        {
+            "civilian": "魔术",
+            "undercover": "杂技"
+        },
+        {
+            "civilian": "拼图",
+            "undercover": "积木"
+        },
+        {
+            "civilian": "动画片",
+            "undercover": "漫画"
+        },
+        {
+            "civilian": "讲故事",
+            "undercover": "说笑话"
+        },
+        {
+            "civilian": "捉迷藏",
+            "undercover": "瞎子摸人"
+        },
+        {
+            "civilian": "唱歌",
+            "undercover": "听音乐"
+        },
+        {
+            "civilian": "看表演",
+            "undercover": "看比赛"
+        }
+    ]
 }

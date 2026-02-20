@@ -1,18 +1,30 @@
 {
-    "category":  "时间",
-    "difficulty":  "easy",
-    "pairs":  [
-                  {
-                      "civilian":  "白天",
-                      "undercover":  "黑夜"
-                  },
-                  {
-                      "civilian":  "早上",
-                      "undercover":  "晚上"
-                  },
-                  {
-                      "civilian":  "今天",
-                      "undercover":  "明天"
-                  }
-              ]
+    "category": "时间",
+    "difficulty": "easy",
+    "pairs": [
+        {
+            "civilian": "白天",
+            "undercover": "黑夜"
+        },
+        {
+            "civilian": "生日",
+            "undercover": "纪念日"
+        },
+        {
+            "civilian": "开学第一天",
+            "undercover": "死期"
+        },
+        {
+            "civilian": "早上",
+            "undercover": "清晨"
+        },
+        {
+            "civilian": "未来",
+            "undercover": "明天"
+        },
+        {
+            "civilian": "本命年",
+            "undercover": "幸运日"
+        }
+    ]
 }

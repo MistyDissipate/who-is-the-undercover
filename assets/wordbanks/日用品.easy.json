@@ -1,22 +1,42 @@
 {
-    "category":  "日用品",
-    "difficulty":  "easy",
-    "pairs":  [
-                  {
-                      "civilian":  "牙刷",
-                      "undercover":  "梳子"
-                  },
-                  {
-                      "civilian":  "毛巾",
-                      "undercover":  "浴巾"
-                  },
-                  {
-                      "civilian":  "雨伞",
-                      "undercover":  "雨衣"
-                  },
-                  {
-                      "civilian":  "拖鞋",
-                      "undercover":  "运动鞋"
-                  }
-              ]
+    "category": "日用品",
+    "difficulty": "easy",
+    "pairs": [
+        {
+            "civilian": "牙刷",
+            "undercover": "梳子"
+        },
+        {
+            "civilian": "毛巾",
+            "undercover": "浴巾"
+        },
+        {
+            "civilian": "雨伞",
+            "undercover": "雨衣"
+        },
+        {
+            "civilian": "拖鞋",
+            "undercover": "运动鞋"
+        },
+        {
+            "civilian": "牙膏",
+            "undercover": "洗发水"
+        },
+        {
+            "civilian": "脸盆",
+            "undercover": "水桶"
+        },
+        {
+            "civilian": "枕头",
+            "undercover": "被子"
+        },
+        {
+            "civilian": "肥皂",
+            "undercover": "洗手液"
+        },
+        {
+            "civilian": "抹布",
+            "undercover": "海绵"
+        }
+    ]
 }

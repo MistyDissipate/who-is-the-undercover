@@ -19,6 +19,9 @@ class _SetupScreenState extends State<SetupScreen> {
   bool _isStarting = false;
   bool _isCheckingWordPool = true;
   String? _wordPoolError;
+  List<WordBankOption> _wordBankOptions = [];
+  bool _enableDifficultyFilter = false;
+  String? _selectedDifficulty;
 
   @override
   void initState() {
@@ -33,18 +36,124 @@ class _SetupScreenState extends State<SetupScreen> {
     });
 
     try {
-      await WordPoolService.loadPairs();
+      final options = await WordPoolService.loadWordBankOptions();
+      final enabledCategories = options
+          .where((item) => item.enabled && item.category.isNotEmpty)
+          .map((item) => item.category)
+          .toSet();
+
+      final availableDifficulties = options
+          .where((item) => item.enabled && item.difficulty.isNotEmpty)
+          .map((item) => item.difficulty)
+          .toSet();
+
+      if (_selectedDifficulty != null && !availableDifficulties.contains(_selectedDifficulty)) {
+        _selectedDifficulty = null;
+        _enableDifficultyFilter = false;
+      }
+
+      final pairs = await WordPoolService.loadPairs(
+        categories: enabledCategories,
+        difficulties: _enableDifficultyFilter && _selectedDifficulty != null
+            ? {_selectedDifficulty!}
+            : null,
+      );
+
+      if (pairs.isEmpty) {
+        throw StateError('当前筛选条件下没有可用词库，请调整索引 enabled 或难度开关');
+      }
+
       if (!mounted) return;
       setState(() {
         _isCheckingWordPool = false;
+        _wordBankOptions = options;
       });
-    } catch (_) {
+    } catch (error) {
       if (!mounted) return;
       setState(() {
         _isCheckingWordPool = false;
-        _wordPoolError = '词库加载失败，请检查 assets/word_pairs.json';
+        _wordPoolError = error is StateError
+            ? error.message
+            : '词库加载失败，请检查 assets/wordbanks/index.json 或 assets/word_pairs.json';
       });
     }
+  }
+
+  Set<String> _enabledCategories() {
+    return _wordBankOptions
+        .where((item) => item.enabled && item.category.isNotEmpty)
+        .map((item) => item.category)
+        .toSet();
+  }
+
+  List<String> _enabledDifficulties() {
+    final values = _wordBankOptions
+        .where((item) => item.enabled && item.difficulty.isNotEmpty)
+        .map((item) => item.difficulty)
+        .toSet()
+        .toList()
+      ..sort();
+    return values;
+  }
+
+  Widget _buildDifficultyFilterCard() {
+    final difficulties = _enabledDifficulties();
+    final canToggle = difficulties.isNotEmpty;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey.shade300),
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SwitchListTile.adaptive(
+            contentPadding: EdgeInsets.zero,
+            title: const Text(
+              '按难度筛选词库',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            ),
+            subtitle: Text(
+              canToggle ? '开启后仅使用所选难度' : '当前没有可用难度',
+              style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+            ),
+            value: _enableDifficultyFilter,
+            onChanged: !canToggle
+                ? null
+                : (value) {
+                    setState(() {
+                      _enableDifficultyFilter = value;
+                      _selectedDifficulty ??= difficulties.first;
+                    });
+                    _checkWordPool();
+                  },
+          ),
+          if (_enableDifficultyFilter && canToggle) ...[
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: difficulties.map((difficulty) {
+                final selected = _selectedDifficulty == difficulty;
+                return ChoiceChip(
+                  label: Text(difficulty),
+                  selected: selected,
+                  onSelected: (isSelected) {
+                    if (!isSelected) return;
+                    setState(() {
+                      _selectedDifficulty = difficulty;
+                    });
+                    _checkWordPool();
+                  },
+                );
+              }).toList(),
+            ),
+          ],
+        ],
+      ),
+    );
   }
 
   Widget _buildCounterTile({
@@ -119,6 +228,11 @@ class _SetupScreenState extends State<SetupScreen> {
                     builder: (context) => HostScreen(
                       playerCount: playerNum,
                       undercoverCount: undercoverNum,
+                      selectedCategories: _enabledCategories(),
+                      selectedDifficulties: _enableDifficultyFilter &&
+                              _selectedDifficulty != null
+                          ? {_selectedDifficulty!}
+                          : null,
                     ),
                   ),
                 );
@@ -187,6 +301,20 @@ class _SetupScreenState extends State<SetupScreen> {
                                 ),
                               ],
                               const SizedBox(height: 16),
+                              Builder(
+                                builder: (context) {
+                                  final categories = _enabledCategories().toList()..sort();
+                                  return Text(
+                                    categories.isEmpty
+                                        ? '当前未启用任何分类（请在 index.json 设置 enabled: true）'
+                                        : '已启用分类：${categories.join('、')}',
+                                    style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
+                                  );
+                                },
+                              ),
+                              const SizedBox(height: 12),
+                              _buildDifficultyFilterCard(),
+                              const SizedBox(height: 12),
                               _buildCounterTile(
                                 title: '玩家数',
                                 subtitle: '范围：$minPlayers - $maxPlayers',

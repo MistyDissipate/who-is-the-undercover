@@ -1,22 +1,38 @@
 {
-    "category":  "自然",
-    "difficulty":  "easy",
-    "pairs":  [
-                  {
-                      "civilian":  "太阳",
-                      "undercover":  "月亮"
-                  },
-                  {
-                      "civilian":  "云朵",
-                      "undercover":  "雾"
-                  },
-                  {
-                      "civilian":  "彩虹",
-                      "undercover":  "晚霞"
-                  },
-                  {
-                      "civilian":  "大海",
-                      "undercover":  "湖"
-                  }
-              ]
+    "category": "自然",
+    "difficulty": "easy",
+    "pairs": [
+        {
+            "civilian": "太阳",
+            "undercover": "地球"
+        },
+        {
+            "civilian": "云朵",
+            "undercover": "白雾"
+        },
+        {
+            "civilian": "彩虹",
+            "undercover": "晚霞"
+        },
+        {
+            "civilian": "大海",
+            "undercover": "湖泊"
+        },
+        {
+            "civilian": "小溪",
+            "undercover": "河流"
+        },
+        {
+            "civilian": "高山",
+            "undercover": "丘陵"
+        },
+        {
+            "civilian": "雷雨",
+            "undercover": "阵雨"
+        },
+        {
+            "civilian": "森林",
+            "undercover": "草原"
+        }
+    ]
 }

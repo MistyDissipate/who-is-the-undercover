@@ -1,30 +1,54 @@
 {
-    "category":  "职业",
-    "difficulty":  "easy",
-    "pairs":  [
-                  {
-                      "civilian":  "老师",
-                      "undercover":  "医生"
-                  },
-                  {
-                      "civilian":  "警察",
-                      "undercover":  "消防员"
-                  },
-                  {
-                      "civilian":  "厨师",
-                      "undercover":  "面点师"
-                  },
-                  {
-                      "civilian":  "司机",
-                      "undercover":  "飞行员"
-                  },
-                  {
-                      "civilian":  "画家",
-                      "undercover":  "设计师"
-                  },
-                  {
-                      "civilian":  "农民",
-                      "undercover":  "园丁"
-                  }
-              ]
+    "category": "职业",
+    "difficulty": "easy",
+    "pairs": [
+        {
+            "civilian": "老师",
+            "undercover": "宿管"
+        },
+        {
+            "civilian": "警察",
+            "undercover": "军人"
+        },
+        {
+            "civilian": "厨师",
+            "undercover": "面包师"
+        },
+        {
+            "civilian": "空军",
+            "undercover": "飞行员"
+        },
+        {
+            "civilian": "画家",
+            "undercover": "小说家"
+        },
+        {
+            "civilian": "花匠",
+            "undercover": "园丁"
+        },
+        {
+            "civilian": "新闻记者",
+            "undercover": "主持人"
+        },
+        {
+            "civilian": "蜡像师",
+            "undercover": "雕刻家"
+        },
+        {
+            "civilian": "理发师",
+            "undercover": "化妆师"
+        },
+        {
+            "civilian": "快递员",
+            "undercover": "外卖员"
+        },
+        {
+            "civilian": "律师",
+            "undercover": "辩论家"
+        },
+        {
+            "civilian": "玩具商",
+            "undercover": "古董商"
+        }
+    ]
 }

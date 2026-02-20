@@ -1,42 +1,58 @@
 {
-    "category":  "食物",
-    "difficulty":  "easy",
-    "pairs":  [
-                  {
-                      "civilian":  "汉堡",
-                      "undercover":  "披萨"
-                  },
-                  {
-                      "civilian":  "米饭",
-                      "undercover":  "面条"
-                  },
-                  {
-                      "civilian":  "饺子",
-                      "undercover":  "包子"
-                  },
-                  {
-                      "civilian":  "馒头",
-                      "undercover":  "花卷"
-                  },
-                  {
-                      "civilian":  "鸡蛋",
-                      "undercover":  "鹌鹑蛋"
-                  },
-                  {
-                      "civilian":  "薯条",
-                      "undercover":  "薯片"
-                  },
-                  {
-                      "civilian":  "蛋糕",
-                      "undercover":  "面包"
-                  },
-                  {
-                      "civilian":  "巧克力",
-                      "undercover":  "糖果"
-                  },
-                  {
-                      "civilian":  "冰淇淋",
-                      "undercover":  "雪糕"
-                  }
-              ]
+    "category": "食物",
+    "difficulty": "easy",
+    "pairs": [
+        {
+            "civilian": "汉堡",
+            "undercover": "披萨"
+        },
+        {
+            "civilian": "米饭",
+            "undercover": "面条"
+        },
+        {
+            "civilian": "饺子",
+            "undercover": "包子"
+        },
+        {
+            "civilian": "馒头",
+            "undercover": "花卷"
+        },
+        {
+            "civilian": "鸡蛋",
+            "undercover": "鹌鹑蛋"
+        },
+        {
+            "civilian": "薯条",
+            "undercover": "薯片"
+        },
+        {
+            "civilian": "蛋糕",
+            "undercover": "泡芙"
+        },
+        {
+            "civilian": "巧克力",
+            "undercover": "牛奶糖"
+        },
+        {
+            "civilian": "水果冰棒",
+            "undercover": "草莓刨冰"
+        },
+        {
+            "civilian": "玉米",
+            "undercover": "红薯"
+        },
+        {
+            "civilian": "牛肉",
+            "undercover": "猪肉"
+        },
+        {
+            "civilian": "鸡翅",
+            "undercover": "鸡腿"
+        },
+        {
+            "civilian": "汤圆",
+            "undercover": "饺子"
+        }
+    ]
 }

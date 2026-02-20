@@ -1,26 +1,42 @@
 {
-    "category":  "数码",
-    "difficulty":  "easy",
-    "pairs":  [
-                  {
-                      "civilian":  "手机",
-                      "undercover":  "平板"
-                  },
-                  {
-                      "civilian":  "键盘",
-                      "undercover":  "鼠标"
-                  },
-                  {
-                      "civilian":  "耳机",
-                      "undercover":  "音箱"
-                  },
-                  {
-                      "civilian":  "相机",
-                      "undercover":  "摄像机"
-                  },
-                  {
-                      "civilian":  "手表",
-                      "undercover":  "闹钟"
-                  }
-              ]
+    "category": "数码",
+    "difficulty": "easy",
+    "pairs": [
+        {
+            "civilian": "手机",
+            "undercover": "平板"
+        },
+        {
+            "civilian": "键盘",
+            "undercover": "鼠标"
+        },
+        {
+            "civilian": "耳机",
+            "undercover": "音箱"
+        },
+        {
+            "civilian": "相机",
+            "undercover": "摄像机"
+        },
+        {
+            "civilian": "手表",
+            "undercover": "闹钟"
+        },
+        {
+            "civilian": "打印机",
+            "undercover": "复印机"
+        },
+        {
+            "civilian": "软盘",
+            "undercover": "DVD光碟"
+        },
+        {
+            "civilian": "充电电池",
+            "undercover": "充电宝"
+        },
+        {
+            "civilian": "智能遥控器",
+            "undercover": "游戏手柄"
+        }
+    ]
 }

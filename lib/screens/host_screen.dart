@@ -6,11 +6,15 @@ import 'vote_screen.dart';
 class HostScreen extends StatefulWidget {
   final int playerCount;
   final int undercoverCount;
+  final Set<String>? selectedCategories;
+  final Set<String>? selectedDifficulties;
 
   const HostScreen({
     super.key,
     required this.playerCount,
     required this.undercoverCount,
+    this.selectedCategories,
+    this.selectedDifficulties,
   });
 
   @override
@@ -35,6 +39,8 @@ class _HostScreenState extends State<HostScreen> {
       final loadedPlayers = await GameService.createPlayersFromWordPool(
         widget.playerCount,
         widget.undercoverCount,
+        categories: widget.selectedCategories,
+        difficulties: widget.selectedDifficulties,
       );
 
       if (!mounted) return;
@@ -45,11 +51,13 @@ class _HostScreenState extends State<HostScreen> {
         _isLoading = false;
         _loadError = null;
       });
-    } catch (_) {
+    } catch (error) {
       if (!mounted) return;
       setState(() {
         _isLoading = false;
-        _loadError = '词库加载失败，请检查 assets 配置和 JSON 格式';
+        _loadError = error is StateError
+            ? error.message
+            : '词库加载失败，请检查 assets 配置和 JSON 格式';
       });
     }
   }

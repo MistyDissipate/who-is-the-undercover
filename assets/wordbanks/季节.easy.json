@@ -1,14 +1,22 @@
 {
-    "category":  "季节",
-    "difficulty":  "easy",
-    "pairs":  [
-                  {
-                      "civilian":  "春天",
-                      "undercover":  "秋天"
-                  },
-                  {
-                      "civilian":  "夏天",
-                      "undercover":  "冬天"
-                  }
-              ]
+    "category": "季节",
+    "difficulty": "easy",
+    "pairs": [
+        {
+            "civilian": "春天",
+            "undercover": "秋天"
+        },
+        {
+            "civilian": "夏天",
+            "undercover": "雨季"
+        },
+        {
+            "civilian": "开学季",
+            "undercover": "毕业季"
+        },
+        {
+            "civilian": "开花期",
+            "undercover": "落果期"
+        }
+    ]
 }

@@ -1,30 +1,46 @@
 {
-    "category":  "交通",
-    "difficulty":  "easy",
-    "pairs":  [
-                  {
-                      "civilian":  "飞机",
-                      "undercover":  "高铁"
-                  },
-                  {
-                      "civilian":  "地铁",
-                      "undercover":  "公交"
-                  },
-                  {
-                      "civilian":  "自行车",
-                      "undercover":  "电动车"
-                  },
-                  {
-                      "civilian":  "出租车",
-                      "undercover":  "网约车"
-                  },
-                  {
-                      "civilian":  "轮船",
-                      "undercover":  "游艇"
-                  },
-                  {
-                      "civilian":  "火车",
-                      "undercover":  "动车"
-                  }
-              ]
+    "category": "交通",
+    "difficulty": "easy",
+    "pairs": [
+        {
+            "civilian": "飞机",
+            "undercover": "高铁"
+        },
+        {
+            "civilian": "地铁",
+            "undercover": "公交"
+        },
+        {
+            "civilian": "自行车",
+            "undercover": "电动车"
+        },
+        {
+            "civilian": "出租车",
+            "undercover": "网约车"
+        },
+        {
+            "civilian": "轮船",
+            "undercover": "游艇"
+        },
+        {
+            "civilian": "火车",
+            "undercover": "动车"
+        },
+        {
+            "civilian": "摩托车",
+            "undercover": "老头乐"
+        },
+        {
+            "civilian": "校车",
+            "undercover": "大巴"
+        },
+        {
+            "civilian": "缆车",
+            "undercover": "观光车"
+        },
+        {
+            "civilian": "三轮车",
+            "undercover": "手推车"
+        }
+    ]
 }
