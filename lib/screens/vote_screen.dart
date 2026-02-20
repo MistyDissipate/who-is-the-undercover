@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/game_models.dart';
+import 'host_screen.dart';
 
 class VoteScreen extends StatefulWidget {
   final List<Player> players;
@@ -13,6 +14,10 @@ class VoteScreen extends StatefulWidget {
 class _VoteScreenState extends State<VoteScreen> {
   late List<Player> _players;
   Player? _selectedPlayer; // 当前选中的玩家
+
+  String _roleLabel(GameRole role) {
+    return role == GameRole.civilian ? '平民' : '卧底';
+  }
 
   @override
   void initState() {
@@ -138,19 +143,71 @@ class _VoteScreenState extends State<VoteScreen> {
   }
 
   void _showGameOverDialog(String message) {
+    if (!mounted) return;
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
-        title: Text('游戏结束'),
-        content: Text(message),
+        title: Text('游戏结算'),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                message,
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 12),
+              Text('所有玩家身份与词汇：'),
+              SizedBox(height: 8),
+              Flexible(
+                child: ListView.separated(
+                  shrinkWrap: true,
+                  itemCount: _players.length,
+                  separatorBuilder: (context, index) => Divider(height: 1),
+                  itemBuilder: (context, index) {
+                    final player = _players[index];
+                    return ListTile(
+                      dense: true,
+                      contentPadding: EdgeInsets.zero,
+                      title: Text(player.name),
+                      subtitle: Text('身份：${_roleLabel(player.role)}  |  词汇：${player.word}'),
+                      trailing: Text(player.isAlive ? '存活' : '淘汰'),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
         actions: [
           TextButton(
             onPressed: () {
               Navigator.of(context, rootNavigator: true)
                   .popUntil((route) => route.isFirst);
             },
-            child: Text('确定'),
+            child: Text('返回首页'),
+          ),
+          TextButton(
+            onPressed: () {
+              final playerCount = _players.length;
+              final undercoverCount = _players
+                  .where((p) => p.role == GameRole.undercover)
+                  .length;
+
+              Navigator.of(context, rootNavigator: true).pushAndRemoveUntil<void>(
+                MaterialPageRoute(
+                  builder: (context) => HostScreen(
+                    playerCount: playerCount,
+                    undercoverCount: undercoverCount,
+                  ),
+                ),
+                (route) => route.isFirst,
+              );
+            },
+            child: Text('再来一局'),
           ),
         ],
       ),
