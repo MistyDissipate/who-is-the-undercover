@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:uncover_agent/screens/host_screen.dart';
+import 'package:uncover_agent/services/word_pool_service.dart';
 
 class SetupScreen extends StatefulWidget {
   const SetupScreen({super.key});
@@ -16,6 +17,35 @@ class _SetupScreenState extends State<SetupScreen> {
   int playerNum = 4;
   int undercoverNum = 1;
   bool _isStarting = false;
+  bool _isCheckingWordPool = true;
+  String? _wordPoolError;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkWordPool();
+  }
+
+  Future<void> _checkWordPool() async {
+    setState(() {
+      _isCheckingWordPool = true;
+      _wordPoolError = null;
+    });
+
+    try {
+      await WordPoolService.loadPairs();
+      if (!mounted) return;
+      setState(() {
+        _isCheckingWordPool = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _isCheckingWordPool = false;
+        _wordPoolError = '词库加载失败，请检查 assets/word_pairs.json';
+      });
+    }
+  }
 
   Widget _buildCounterTile({
     required String title,
@@ -71,10 +101,12 @@ class _SetupScreenState extends State<SetupScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final canStart = !_isStarting && !_isCheckingWordPool && _wordPoolError == null;
+
     final startButton = SizedBox(
       height: 48,
       child: ElevatedButton(
-        onPressed: _isStarting
+        onPressed: !canStart
             ? null
             : () async {
                 setState(() {
@@ -138,6 +170,22 @@ class _SetupScreenState extends State<SetupScreen> {
                                 '设置玩家数量和卧底数量，然后开始游戏。',
                                 style: TextStyle(color: Colors.grey.shade700),
                               ),
+                              if (_isCheckingWordPool) ...[
+                                const SizedBox(height: 8),
+                                const Text('正在加载词库...'),
+                              ],
+                              if (_wordPoolError != null) ...[
+                                const SizedBox(height: 8),
+                                Text(
+                                  _wordPoolError!,
+                                  style: TextStyle(color: Theme.of(context).colorScheme.error),
+                                ),
+                                const SizedBox(height: 8),
+                                TextButton(
+                                  onPressed: _checkWordPool,
+                                  child: const Text('重试加载词库'),
+                                ),
+                              ],
                               const SizedBox(height: 16),
                               _buildCounterTile(
                                 title: '玩家数',
