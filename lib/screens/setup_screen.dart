@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:uncover_agent/screens/host_screen.dart';
+import 'package:uncover_agent/screens/word_bank_manage_screen.dart';
 import 'package:uncover_agent/services/issue_report_service.dart';
 import 'package:uncover_agent/services/word_pool_service.dart';
 import 'package:uncover_agent/utils/app_logger.dart';
 import 'package:uncover_agent/widgets/setup/counter_setting_card.dart';
-import 'package:uncover_agent/widgets/setup/difficulty_filter_setting_card.dart';
 
 class SetupScreen extends StatefulWidget {
   const SetupScreen({super.key});
@@ -23,30 +23,26 @@ class _SetupScreenState extends State<SetupScreen> {
 
   int get maxUndercover => (playerNum / 2).ceil() - 1;
   int get minPlayers => (undercoverNum * 2) + 1;
-  Set<String>? get _selectedDifficulties => _enableDifficultyFilter && _selectedDifficulty != null
-      ? {_selectedDifficulty!}
-      : null;
-
   int playerNum = 4;
   int undercoverNum = 1;
   bool _isStarting = false;
   bool _isCheckingWordPool = true;
   bool _isSendingIssueReport = false;
+  bool _revealRoleOnElimination = true;
   String? _wordPoolError;
-  List<WordBankOption> _wordBankOptions = [];
-  bool _enableDifficultyFilter = false;
-  String? _selectedDifficulty;
+  List<WordBank> _wordBanks = [];
+  String? _selectedWordBankId;
 
   @override
   void initState() {
     super.initState();
     AppLogger.info('Setup screen initialized', name: 'SetupScreen');
-    _checkWordPool();
+    _loadWordBanks();
   }
 
-  Future<void> _checkWordPool() async {
+  Future<void> _loadWordBanks() async {
     AppLogger.debug(
-      'Checking word pool (filter=$_enableDifficultyFilter, difficulty=${_selectedDifficulty ?? 'none'})',
+      'Loading word bank selection state',
       name: 'SetupScreen',
     );
 
@@ -56,20 +52,18 @@ class _SetupScreenState extends State<SetupScreen> {
     });
 
     try {
-      final availability = await WordPoolService.checkAvailability(
-        enableDifficultyFilter: _enableDifficultyFilter,
-        selectedDifficulty: _selectedDifficulty,
+      final selectionState = await WordPoolService.getSelectionState(
+        selectedBankId: _selectedWordBankId,
       );
 
       if (!mounted) return;
       setState(() {
         _isCheckingWordPool = false;
-        _wordBankOptions = availability.options;
-        _enableDifficultyFilter = availability.enableDifficultyFilter;
-        _selectedDifficulty = availability.selectedDifficulty;
+        _wordBanks = selectionState.banks;
+        _selectedWordBankId = selectionState.selectedBankId;
       });
       AppLogger.info(
-        'Word pool ready (options=${availability.options.length}, categories=${availability.enabledCategories.length}, difficulties=${availability.availableDifficulties.length})',
+        'Word banks loaded (total=${selectionState.banks.length}, enabled=${selectionState.enabledBanks.length})',
         name: 'SetupScreen',
       );
     } catch (error) {
@@ -78,36 +72,31 @@ class _SetupScreenState extends State<SetupScreen> {
         _isCheckingWordPool = false;
         _wordPoolError = error is StateError
             ? error.message
-            : '词库加载失败，请检查 assets/wordbanks/index.json 或 assets/word_pairs.json';
+            : '词库加载失败，请检查 assets/wordbanks/index.json';
       });
       AppLogger.error(
-        'Word pool check failed',
+        'Word bank load failed',
         name: 'SetupScreen',
         error: error,
       );
     }
   }
 
-  Set<String> _enabledCategories() {
-    return _wordBankOptions
-        .where((item) => item.enabled && item.category.isNotEmpty)
-        .map((item) => item.category)
-        .toSet();
-  }
-
-  List<String> _enabledDifficulties() {
-    final values = _wordBankOptions
-        .where((item) => item.enabled && item.difficulty.isNotEmpty)
-        .map((item) => item.difficulty)
-        .toSet()
-        .toList()
-      ..sort();
-    return values;
+  List<WordBank> _enabledBanks() {
+    return _wordBanks.where((bank) => bank.enabled).toList();
   }
 
   Future<void> _startGame() async {
+    final selectedBankId = _selectedWordBankId;
+    if (selectedBankId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('请先选择可用词库')),
+      );
+      return;
+    }
+
     AppLogger.info(
-      'Start game tapped (players=$playerNum, undercover=$undercoverNum, categories=${_enabledCategories().length}, difficulty=${_selectedDifficulty ?? 'none'})',
+      'Start game tapped (players=$playerNum, undercover=$undercoverNum, wordBank=$selectedBankId, revealRole=$_revealRoleOnElimination)',
       name: 'SetupScreen',
     );
 
@@ -121,8 +110,8 @@ class _SetupScreenState extends State<SetupScreen> {
         builder: (context) => HostScreen(
           playerCount: playerNum,
           undercoverCount: undercoverNum,
-          selectedCategories: _enabledCategories(),
-          selectedDifficulties: _selectedDifficulties,
+          selectedWordBankId: selectedBankId,
+          revealRoleOnElimination: _revealRoleOnElimination,
         ),
       ),
     );
@@ -132,23 +121,6 @@ class _SetupScreenState extends State<SetupScreen> {
       _isStarting = false;
     });
     AppLogger.debug('Returned from host screen', name: 'SetupScreen');
-  }
-
-  void _onToggleDifficultyFilter(bool value) {
-    AppLogger.info('Toggle difficulty filter: $value', name: 'SetupScreen');
-    setState(() {
-      _enableDifficultyFilter = value;
-      _selectedDifficulty ??= _enabledDifficulties().first;
-    });
-    _checkWordPool();
-  }
-
-  void _onSelectDifficulty(String difficulty) {
-    AppLogger.info('Select difficulty: $difficulty', name: 'SetupScreen');
-    setState(() {
-      _selectedDifficulty = difficulty;
-    });
-    _checkWordPool();
   }
 
   void _decreasePlayerCount() {
@@ -185,6 +157,14 @@ class _SetupScreenState extends State<SetupScreen> {
     AppLogger.debug('Undercover count increased to $undercoverNum', name: 'SetupScreen');
   }
 
+  Future<void> _openWordBankManageScreen() async {
+    await Navigator.push<void>(
+      context,
+      MaterialPageRoute(builder: (context) => const WordBankManageScreen()),
+    );
+    await _loadWordBanks();
+  }
+
   Future<void> _sendIssueReport() async {
     if (_isSendingIssueReport) return;
 
@@ -205,7 +185,7 @@ class _SetupScreenState extends State<SetupScreen> {
                       const Text('将打开邮箱并自动填入最近日志，你可以确认后发送。'),
                       const SizedBox(height: 12),
                       DropdownButtonFormField<String>(
-                        value: selectedIssueType,
+                        initialValue: selectedIssueType,
                         decoration: const InputDecoration(
                           labelText: '问题类型',
                           border: OutlineInputBorder(),
@@ -335,7 +315,7 @@ class _SetupScreenState extends State<SetupScreen> {
             ),
             const SizedBox(height: 8),
             TextButton(
-              onPressed: _checkWordPool,
+              onPressed: _loadWordBanks,
               child: const Text('重试加载词库'),
             ),
           ],
@@ -347,12 +327,98 @@ class _SetupScreenState extends State<SetupScreen> {
   }
 
   Widget _buildEnabledCategoriesSummary() {
-    final categories = _enabledCategories().toList()..sort();
+    final enabledBanks = _enabledBanks();
     return Text(
-      categories.isEmpty
-          ? '当前未启用任何分类（请在 index.json 设置 enabled: true）'
-          : '已启用分类：${categories.join('、')}',
+      enabledBanks.isEmpty
+          ? '当前未启用任何词库，请先到词库管理中启用。'
+          : '当前可用词库：${enabledBanks.length} 个',
       style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
+    );
+  }
+
+  Widget _buildWordBankSection() {
+    final enabledBanks = _enabledBanks();
+    final selectedExists = _selectedWordBankId != null &&
+        enabledBanks.any((bank) => bank.id == _selectedWordBankId);
+    final selected = selectedExists
+        ? _selectedWordBankId
+        : (enabledBanks.isNotEmpty ? enabledBanks.first.id : null);
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey.shade300),
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Expanded(
+                child: Text(
+                  '词库选择',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                ),
+              ),
+              TextButton(
+                onPressed: _openWordBankManageScreen,
+                child: const Text('管理词库'),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          DropdownButtonFormField<String>(
+            initialValue: selected,
+            items: enabledBanks
+                .map(
+                  (bank) => DropdownMenuItem<String>(
+                    value: bank.id,
+                    child: Text('${bank.name}（${bank.entries.length}词条）'),
+                  ),
+                )
+                .toList(),
+            decoration: const InputDecoration(
+              border: OutlineInputBorder(),
+            ),
+            onChanged: enabledBanks.isEmpty
+                ? null
+                : (value) {
+                    if (value == null) return;
+                    setState(() {
+                      _selectedWordBankId = value;
+                    });
+                  },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRuleOptionsSection() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey.shade300),
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: SwitchListTile.adaptive(
+        contentPadding: EdgeInsets.zero,
+        title: const Text(
+          '出局后显示身份',
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+        ),
+        subtitle: const Text(
+          '关闭后仅显示玩家已淘汰，不公布其身份',
+          style: TextStyle(fontSize: 12),
+        ),
+        value: _revealRoleOnElimination,
+        onChanged: (value) {
+          setState(() {
+            _revealRoleOnElimination = value;
+          });
+        },
+      ),
     );
   }
 
@@ -363,13 +429,9 @@ class _SetupScreenState extends State<SetupScreen> {
         const SizedBox(height: 16),
         _buildEnabledCategoriesSummary(),
         const SizedBox(height: 12),
-        DifficultyFilterSettingCard(
-          enabled: _enableDifficultyFilter,
-          difficulties: _enabledDifficulties(),
-          selectedDifficulty: _selectedDifficulty,
-          onToggle: _onToggleDifficultyFilter,
-          onSelectDifficulty: _onSelectDifficulty,
-        ),
+        _buildWordBankSection(),
+        const SizedBox(height: 12),
+        _buildRuleOptionsSection(),
         const SizedBox(height: 12),
         CounterSettingCard(
           title: '玩家数',

@@ -6,15 +6,15 @@ import 'vote_screen.dart';
 class HostScreen extends StatefulWidget {
   final int playerCount;
   final int undercoverCount;
-  final Set<String>? selectedCategories;
-  final Set<String>? selectedDifficulties;
+  final String selectedWordBankId;
+  final bool revealRoleOnElimination;
 
   const HostScreen({
     super.key,
     required this.playerCount,
     required this.undercoverCount,
-    this.selectedCategories,
-    this.selectedDifficulties,
+    required this.selectedWordBankId,
+    required this.revealRoleOnElimination,
   });
 
   @override
@@ -39,8 +39,7 @@ class _HostScreenState extends State<HostScreen> {
       final loadedPlayers = await GameService.createPlayersFromWordPool(
         widget.playerCount,
         widget.undercoverCount,
-        categories: widget.selectedCategories,
-        difficulties: widget.selectedDifficulties,
+        wordBankId: widget.selectedWordBankId,
       );
 
       if (!mounted) return;
@@ -82,7 +81,11 @@ class _HostScreenState extends State<HostScreen> {
     await Navigator.pushReplacement<void, void>(
       context,
       MaterialPageRoute(
-        builder: (context) => VoteScreen(players: players),
+        builder: (context) => VoteScreen(
+          players: players,
+          revealRoleOnElimination: widget.revealRoleOnElimination,
+          selectedWordBankId: widget.selectedWordBankId,
+        ),
       ),
     );
   }

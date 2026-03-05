@@ -7,8 +7,7 @@ class GameService {
     int playerCount,
     int undercoverCount,
     {
-      Set<String>? categories,
-      Set<String>? difficulties,
+      required String wordBankId,
     }
   ) async {
     if (playerCount <= 0) {
@@ -19,8 +18,7 @@ class GameService {
     }
 
     final wordPair = await WordPoolService.getRandomPair(
-      categories: categories,
-      difficulties: difficulties,
+      bankId: wordBankId,
     );
 
     final players = List.generate(playerCount, (index) {

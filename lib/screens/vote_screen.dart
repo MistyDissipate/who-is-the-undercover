@@ -4,8 +4,15 @@ import 'host_screen.dart';
 
 class VoteScreen extends StatefulWidget {
   final List<Player> players;
+  final bool revealRoleOnElimination;
+  final String selectedWordBankId;
 
-  const VoteScreen({super.key, required this.players});
+  const VoteScreen({
+    super.key,
+    required this.players,
+    required this.revealRoleOnElimination,
+    required this.selectedWordBankId,
+  });
 
   @override
   State<VoteScreen> createState() => _VoteScreenState();
@@ -27,6 +34,8 @@ class _VoteScreenState extends State<VoteScreen> {
 
   void _eliminateSelected() {
     if (_selectedPlayer == null) return;
+
+    final eliminated = _selectedPlayer!;
     setState(() {
       // 标记选中玩家死亡
       final index = _players.indexWhere((p) => p.id == _selectedPlayer!.id);
@@ -35,6 +44,12 @@ class _VoteScreenState extends State<VoteScreen> {
       }
       _selectedPlayer = null;
     });
+
+    final message = widget.revealRoleOnElimination
+        ? '${eliminated.name} 已出局，身份：${_roleLabel(eliminated.role)}'
+        : '${eliminated.name} 已出局';
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+
     // 检查游戏是否结束
     _checkGameOver();
   }
@@ -202,6 +217,8 @@ class _VoteScreenState extends State<VoteScreen> {
                   builder: (context) => HostScreen(
                     playerCount: playerCount,
                     undercoverCount: undercoverCount,
+                    selectedWordBankId: widget.selectedWordBankId,
+                    revealRoleOnElimination: widget.revealRoleOnElimination,
                   ),
                 ),
                 (route) => route.isFirst,
