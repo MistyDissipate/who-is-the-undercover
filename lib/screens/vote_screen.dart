@@ -4,8 +4,15 @@ import 'host_screen.dart';
 
 class VoteScreen extends StatefulWidget {
   final List<Player> players;
+  final bool revealRoleOnElimination;
+  final String selectedWordBankId;
 
-  const VoteScreen({super.key, required this.players});
+  const VoteScreen({
+    super.key,
+    required this.players,
+    required this.revealRoleOnElimination,
+    required this.selectedWordBankId,
+  });
 
   @override
   State<VoteScreen> createState() => _VoteScreenState();
@@ -25,8 +32,10 @@ class _VoteScreenState extends State<VoteScreen> {
     _players = widget.players.map((p) => p.copy()).toList();
   }
 
-  void _eliminateSelected() {
+  Future<void> _eliminateSelected() async {
     if (_selectedPlayer == null) return;
+
+    final eliminated = _selectedPlayer!;
     setState(() {
       // 标记选中玩家死亡
       final index = _players.indexWhere((p) => p.id == _selectedPlayer!.id);
@@ -35,6 +44,28 @@ class _VoteScreenState extends State<VoteScreen> {
       }
       _selectedPlayer = null;
     });
+
+    if (widget.revealRoleOnElimination) {
+      await showDialog<void>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('淘汰结果'),
+          content: Text('${eliminated.name} 已出局\n身份：${_roleLabel(eliminated.role)}'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('确认'),
+            ),
+          ],
+        ),
+      );
+      if (!mounted) return;
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${eliminated.name} 已出局')),
+      );
+    }
+
     // 检查游戏是否结束
     _checkGameOver();
   }
@@ -64,7 +95,7 @@ class _VoteScreenState extends State<VoteScreen> {
     );
 
     if (confirmed == true) {
-      _eliminateSelected();
+      await _eliminateSelected();
     }
   }
 
@@ -202,6 +233,8 @@ class _VoteScreenState extends State<VoteScreen> {
                   builder: (context) => HostScreen(
                     playerCount: playerCount,
                     undercoverCount: undercoverCount,
+                    selectedWordBankId: widget.selectedWordBankId,
+                    revealRoleOnElimination: widget.revealRoleOnElimination,
                   ),
                 ),
                 (route) => route.isFirst,
