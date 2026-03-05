@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:uncover_agent/screens/host_screen.dart';
 import 'package:uncover_agent/services/word_pool_service.dart';
+import 'package:uncover_agent/widgets/setup/counter_setting_card.dart';
+import 'package:uncover_agent/widgets/setup/difficulty_filter_setting_card.dart';
 
 class SetupScreen extends StatefulWidget {
   const SetupScreen({super.key});
@@ -10,10 +12,18 @@ class SetupScreen extends StatefulWidget {
 }
 
 class _SetupScreenState extends State<SetupScreen> {
-  static const int maxPlayers = 12;
-  static const int minUndercover = 1;
+  static const EdgeInsets _screenPadding = EdgeInsets.all(16);
+  static const EdgeInsets _bottomBarPadding = EdgeInsets.fromLTRB(16, 8, 16, 16);
+  static const EdgeInsets _contentCardPadding = EdgeInsets.all(16);
+  static const int _maxPlayers = 12;
+  static const int _minUndercover = 1;
+
   int get maxUndercover => (playerNum / 2).ceil() - 1;
   int get minPlayers => (undercoverNum * 2) + 1;
+  Set<String>? get _selectedDifficulties => _enableDifficultyFilter && _selectedDifficulty != null
+      ? {_selectedDifficulty!}
+      : null;
+
   int playerNum = 4;
   int undercoverNum = 1;
   bool _isStarting = false;
@@ -36,37 +46,17 @@ class _SetupScreenState extends State<SetupScreen> {
     });
 
     try {
-      final options = await WordPoolService.loadWordBankOptions();
-      final enabledCategories = options
-          .where((item) => item.enabled && item.category.isNotEmpty)
-          .map((item) => item.category)
-          .toSet();
-
-      final availableDifficulties = options
-          .where((item) => item.enabled && item.difficulty.isNotEmpty)
-          .map((item) => item.difficulty)
-          .toSet();
-
-      if (_selectedDifficulty != null && !availableDifficulties.contains(_selectedDifficulty)) {
-        _selectedDifficulty = null;
-        _enableDifficultyFilter = false;
-      }
-
-      final pairs = await WordPoolService.loadPairs(
-        categories: enabledCategories,
-        difficulties: _enableDifficultyFilter && _selectedDifficulty != null
-            ? {_selectedDifficulty!}
-            : null,
+      final availability = await WordPoolService.checkAvailability(
+        enableDifficultyFilter: _enableDifficultyFilter,
+        selectedDifficulty: _selectedDifficulty,
       );
-
-      if (pairs.isEmpty) {
-        throw StateError('当前筛选条件下没有可用词库，请调整索引 enabled 或难度开关');
-      }
 
       if (!mounted) return;
       setState(() {
         _isCheckingWordPool = false;
-        _wordBankOptions = options;
+        _wordBankOptions = availability.options;
+        _enableDifficultyFilter = availability.enableDifficultyFilter;
+        _selectedDifficulty = availability.selectedDifficulty;
       });
     } catch (error) {
       if (!mounted) return;
@@ -96,155 +86,176 @@ class _SetupScreenState extends State<SetupScreen> {
     return values;
   }
 
-  Widget _buildDifficultyFilterCard() {
-    final difficulties = _enabledDifficulties();
-    final canToggle = difficulties.isNotEmpty;
+  Future<void> _startGame() async {
+    setState(() {
+      _isStarting = true;
+    });
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.shade300),
-        borderRadius: BorderRadius.circular(14),
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => HostScreen(
+          playerCount: playerNum,
+          undercoverCount: undercoverNum,
+          selectedCategories: _enabledCategories(),
+          selectedDifficulties: _selectedDifficulties,
+        ),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SwitchListTile.adaptive(
-            contentPadding: EdgeInsets.zero,
-            title: const Text(
-              '按难度筛选词库',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-            ),
-            subtitle: Text(
-              canToggle ? '开启后仅使用所选难度' : '当前没有可用难度',
-              style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
-            ),
-            value: _enableDifficultyFilter,
-            onChanged: !canToggle
-                ? null
-                : (value) {
-                    setState(() {
-                      _enableDifficultyFilter = value;
-                      _selectedDifficulty ??= difficulties.first;
-                    });
-                    _checkWordPool();
-                  },
-          ),
-          if (_enableDifficultyFilter && canToggle) ...[
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: difficulties.map((difficulty) {
-                final selected = _selectedDifficulty == difficulty;
-                return ChoiceChip(
-                  label: Text(difficulty),
-                  selected: selected,
-                  onSelected: (isSelected) {
-                    if (!isSelected) return;
-                    setState(() {
-                      _selectedDifficulty = difficulty;
-                    });
-                    _checkWordPool();
-                  },
-                );
-              }).toList(),
-            ),
-          ],
-        ],
+    );
+
+    if (!mounted) return;
+    setState(() {
+      _isStarting = false;
+    });
+  }
+
+  void _onToggleDifficultyFilter(bool value) {
+    setState(() {
+      _enableDifficultyFilter = value;
+      _selectedDifficulty ??= _enabledDifficulties().first;
+    });
+    _checkWordPool();
+  }
+
+  void _onSelectDifficulty(String difficulty) {
+    setState(() {
+      _selectedDifficulty = difficulty;
+    });
+    _checkWordPool();
+  }
+
+  void _decreasePlayerCount() {
+    setState(() {
+      playerNum--;
+    });
+  }
+
+  void _increasePlayerCount() {
+    setState(() {
+      playerNum++;
+      if (undercoverNum > maxUndercover) {
+        undercoverNum = maxUndercover;
+      }
+    });
+  }
+
+  void _decreaseUndercoverCount() {
+    setState(() {
+      undercoverNum--;
+    });
+  }
+
+  void _increaseUndercoverCount() {
+    setState(() {
+      undercoverNum++;
+    });
+  }
+
+  Widget _buildStartButton(bool canStart) {
+    return SizedBox(
+      height: 48,
+      child: ElevatedButton(
+        onPressed: canStart ? _startGame : null,
+        child: Text(_isStarting ? '进入中...' : '开始游戏'),
       ),
     );
   }
 
-  Widget _buildCounterTile({
-    required String title,
-    required String subtitle,
-    required int value,
-    required VoidCallback? onDecrease,
-    required VoidCallback? onIncrease,
-  }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.shade300),
-        borderRadius: BorderRadius.circular(14),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  subtitle,
-                  style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
-                ),
-              ],
+  Widget _buildHeaderSection(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          '谁是卧底助手',
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
+        const SizedBox(height: 8),
+        Text(
+          '设置玩家数量和卧底数量，然后开始游戏。',
+          style: TextStyle(color: Colors.grey.shade700),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildWordPoolStatusSection(BuildContext context) {
+    if (_isCheckingWordPool) {
+      return const Padding(
+        padding: EdgeInsets.only(top: 8),
+        child: Text('正在加载词库...'),
+      );
+    }
+
+    if (_wordPoolError != null) {
+      return Padding(
+        padding: const EdgeInsets.only(top: 8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              _wordPoolError!,
+              style: TextStyle(color: Theme.of(context).colorScheme.error),
             ),
-          ),
-          IconButton(
-            onPressed: onDecrease,
-            icon: const Icon(Icons.remove),
-          ),
-          Container(
-            width: 44,
-            alignment: Alignment.center,
-            child: Text(
-              '$value',
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            const SizedBox(height: 8),
+            TextButton(
+              onPressed: _checkWordPool,
+              child: const Text('重试加载词库'),
             ),
-          ),
-          IconButton(
-            onPressed: onIncrease,
-            icon: const Icon(Icons.add),
-          ),
-        ],
-      ),
+          ],
+        ),
+      );
+    }
+
+    return const SizedBox.shrink();
+  }
+
+  Widget _buildEnabledCategoriesSummary() {
+    final categories = _enabledCategories().toList()..sort();
+    return Text(
+      categories.isEmpty
+          ? '当前未启用任何分类（请在 index.json 设置 enabled: true）'
+          : '已启用分类：${categories.join('、')}',
+      style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
+    );
+  }
+
+  Widget _buildSettingsSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 16),
+        _buildEnabledCategoriesSummary(),
+        const SizedBox(height: 12),
+        DifficultyFilterSettingCard(
+          enabled: _enableDifficultyFilter,
+          difficulties: _enabledDifficulties(),
+          selectedDifficulty: _selectedDifficulty,
+          onToggle: _onToggleDifficultyFilter,
+          onSelectDifficulty: _onSelectDifficulty,
+        ),
+        const SizedBox(height: 12),
+        CounterSettingCard(
+          title: '玩家数',
+          subtitle: '范围：$minPlayers - $_maxPlayers',
+          value: playerNum,
+          onDecrease: playerNum > minPlayers ? _decreasePlayerCount : null,
+          onIncrease: playerNum < _maxPlayers ? _increasePlayerCount : null,
+        ),
+        const SizedBox(height: 12),
+        CounterSettingCard(
+          title: '卧底数',
+          subtitle: '范围：$_minUndercover - $maxUndercover',
+          value: undercoverNum,
+          onDecrease: undercoverNum > _minUndercover ? _decreaseUndercoverCount : null,
+          onIncrease: undercoverNum < maxUndercover ? _increaseUndercoverCount : null,
+        ),
+      ],
     );
   }
 
   @override
   Widget build(BuildContext context) {
     final canStart = !_isStarting && !_isCheckingWordPool && _wordPoolError == null;
-
-    final startButton = SizedBox(
-      height: 48,
-      child: ElevatedButton(
-        onPressed: !canStart
-            ? null
-            : () async {
-                setState(() {
-                  _isStarting = true;
-                });
-
-                await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => HostScreen(
-                      playerCount: playerNum,
-                      undercoverCount: undercoverNum,
-                      selectedCategories: _enabledCategories(),
-                      selectedDifficulties: _enableDifficultyFilter &&
-                              _selectedDifficulty != null
-                          ? {_selectedDifficulty!}
-                          : null,
-                    ),
-                  ),
-                );
-
-                if (!mounted) return;
-                setState(() {
-                  _isStarting = false;
-                });
-              },
-        child: Text(_isStarting ? '进入中...' : '开始游戏'),
-      ),
-    );
 
     return Scaffold(
       appBar: AppBar(
@@ -253,8 +264,8 @@ class _SetupScreenState extends State<SetupScreen> {
       bottomNavigationBar: SafeArea(
         top: false,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-          child: startButton,
+          padding: _bottomBarPadding,
+          child: _buildStartButton(canStart),
         ),
       ),
       body: SafeArea(
@@ -262,7 +273,7 @@ class _SetupScreenState extends State<SetupScreen> {
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 520),
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: _screenPadding,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -271,92 +282,13 @@ class _SetupScreenState extends State<SetupScreen> {
                       padding: const EdgeInsets.only(bottom: 8),
                       child: Card(
                         child: Padding(
-                          padding: const EdgeInsets.all(16),
+                          padding: _contentCardPadding,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                '谁是卧底助手',
-                                style: Theme.of(context).textTheme.titleLarge,
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                '设置玩家数量和卧底数量，然后开始游戏。',
-                                style: TextStyle(color: Colors.grey.shade700),
-                              ),
-                              if (_isCheckingWordPool) ...[
-                                const SizedBox(height: 8),
-                                const Text('正在加载词库...'),
-                              ],
-                              if (_wordPoolError != null) ...[
-                                const SizedBox(height: 8),
-                                Text(
-                                  _wordPoolError!,
-                                  style: TextStyle(color: Theme.of(context).colorScheme.error),
-                                ),
-                                const SizedBox(height: 8),
-                                TextButton(
-                                  onPressed: _checkWordPool,
-                                  child: const Text('重试加载词库'),
-                                ),
-                              ],
-                              const SizedBox(height: 16),
-                              Builder(
-                                builder: (context) {
-                                  final categories = _enabledCategories().toList()..sort();
-                                  return Text(
-                                    categories.isEmpty
-                                        ? '当前未启用任何分类（请在 index.json 设置 enabled: true）'
-                                        : '已启用分类：${categories.join('、')}',
-                                    style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
-                                  );
-                                },
-                              ),
-                              const SizedBox(height: 12),
-                              _buildDifficultyFilterCard(),
-                              const SizedBox(height: 12),
-                              _buildCounterTile(
-                                title: '玩家数',
-                                subtitle: '范围：$minPlayers - $maxPlayers',
-                                value: playerNum,
-                                onDecrease: playerNum > minPlayers
-                                    ? () {
-                                        setState(() {
-                                          playerNum--;
-                                        });
-                                      }
-                                    : null,
-                                onIncrease: playerNum < maxPlayers
-                                    ? () {
-                                        setState(() {
-                                          playerNum++;
-                                          if (undercoverNum > maxUndercover) {
-                                            undercoverNum = maxUndercover;
-                                          }
-                                        });
-                                      }
-                                    : null,
-                              ),
-                              const SizedBox(height: 12),
-                              _buildCounterTile(
-                                title: '卧底数',
-                                subtitle: '范围：$minUndercover - $maxUndercover',
-                                value: undercoverNum,
-                                onDecrease: undercoverNum > minUndercover
-                                    ? () {
-                                        setState(() {
-                                          undercoverNum--;
-                                        });
-                                      }
-                                    : null,
-                                onIncrease: undercoverNum < maxUndercover
-                                    ? () {
-                                        setState(() {
-                                          undercoverNum++;
-                                        });
-                                      }
-                                    : null,
-                              ),
+                              _buildHeaderSection(context),
+                              _buildWordPoolStatusSection(context),
+                              _buildSettingsSection(),
                             ],
                           ),
                         ),

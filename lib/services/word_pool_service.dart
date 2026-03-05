@@ -40,6 +40,27 @@ class WordBankOption {
   });
 }
 
+class WordPoolAvailability {
+  final List<WordBankOption> options;
+  final Set<String> enabledCategories;
+  final Set<String> availableDifficulties;
+  final bool enableDifficultyFilter;
+  final String? selectedDifficulty;
+
+  const WordPoolAvailability({
+    required this.options,
+    required this.enabledCategories,
+    required this.availableDifficulties,
+    required this.enableDifficultyFilter,
+    required this.selectedDifficulty,
+  });
+
+  Set<String>? get selectedDifficulties {
+    if (!enableDifficultyFilter || selectedDifficulty == null) return null;
+    return {selectedDifficulty!};
+  }
+}
+
 class WordPoolService {
   static const String _legacyAssetPath = 'assets/word_pairs.json';
   static const String _indexAssetPath = 'assets/wordbanks/index.json';
@@ -79,6 +100,57 @@ class WordPoolService {
     }
 
     return result;
+  }
+
+  static Future<WordPoolAvailability> checkAvailability({
+    required bool enableDifficultyFilter,
+    String? selectedDifficulty,
+  }) async {
+    final options = await loadWordBankOptions();
+    final enabledCategories = options
+        .where((item) => item.enabled && item.category.isNotEmpty)
+        .map((item) => item.category)
+        .toSet();
+
+    final availableDifficulties = options
+        .where((item) => item.enabled && item.difficulty.isNotEmpty)
+        .map((item) => item.difficulty)
+        .toSet();
+
+    var normalizedEnableDifficultyFilter = enableDifficultyFilter;
+    var normalizedSelectedDifficulty = selectedDifficulty;
+
+    if (normalizedSelectedDifficulty != null &&
+        !availableDifficulties.contains(normalizedSelectedDifficulty)) {
+      normalizedSelectedDifficulty = null;
+      normalizedEnableDifficultyFilter = false;
+    }
+
+    if (normalizedEnableDifficultyFilter &&
+        normalizedSelectedDifficulty == null &&
+        availableDifficulties.isNotEmpty) {
+      final sortedDifficulties = availableDifficulties.toList()..sort();
+      normalizedSelectedDifficulty = sortedDifficulties.first;
+    }
+
+    final pairs = await loadPairs(
+      categories: enabledCategories,
+      difficulties: normalizedEnableDifficultyFilter && normalizedSelectedDifficulty != null
+          ? {normalizedSelectedDifficulty}
+          : null,
+    );
+
+    if (pairs.isEmpty) {
+      throw StateError('当前筛选条件下没有可用词库，请调整索引 enabled 或难度开关');
+    }
+
+    return WordPoolAvailability(
+      options: options,
+      enabledCategories: enabledCategories,
+      availableDifficulties: availableDifficulties,
+      enableDifficultyFilter: normalizedEnableDifficultyFilter,
+      selectedDifficulty: normalizedSelectedDifficulty,
+    );
   }
 
   static Future<List<WordBankOption>> loadWordBankOptions() async {

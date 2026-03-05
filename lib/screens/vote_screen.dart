@@ -22,7 +22,7 @@ class _VoteScreenState extends State<VoteScreen> {
   @override
   void initState() {
     super.initState();
-    _players = widget.players.map((p) => p.copy()).toList(); // 假设Player有copy方法，或者手动复制
+    _players = widget.players.map((p) => p.copy()).toList();
   }
 
   void _eliminateSelected() {
