@@ -32,7 +32,7 @@ class _VoteScreenState extends State<VoteScreen> {
     _players = widget.players.map((p) => p.copy()).toList();
   }
 
-  void _eliminateSelected() {
+  Future<void> _eliminateSelected() async {
     if (_selectedPlayer == null) return;
 
     final eliminated = _selectedPlayer!;
@@ -45,10 +45,26 @@ class _VoteScreenState extends State<VoteScreen> {
       _selectedPlayer = null;
     });
 
-    final message = widget.revealRoleOnElimination
-        ? '${eliminated.name} 已出局，身份：${_roleLabel(eliminated.role)}'
-        : '${eliminated.name} 已出局';
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+    if (widget.revealRoleOnElimination) {
+      await showDialog<void>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('淘汰结果'),
+          content: Text('${eliminated.name} 已出局\n身份：${_roleLabel(eliminated.role)}'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('确认'),
+            ),
+          ],
+        ),
+      );
+      if (!mounted) return;
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${eliminated.name} 已出局')),
+      );
+    }
 
     // 检查游戏是否结束
     _checkGameOver();
@@ -79,7 +95,7 @@ class _VoteScreenState extends State<VoteScreen> {
     );
 
     if (confirmed == true) {
-      _eliminateSelected();
+      await _eliminateSelected();
     }
   }
 

@@ -1,0 +1,557 @@
+﻿name = "大杂烩"
+
+[[pairs]]
+civilian = "飞机"
+undercover = "高铁"
+
+[[pairs]]
+civilian = "地铁"
+undercover = "公交"
+
+[[pairs]]
+civilian = "自行车"
+undercover = "电动车"
+
+[[pairs]]
+civilian = "出租车"
+undercover = "网约车"
+
+[[pairs]]
+civilian = "轮船"
+undercover = "游艇"
+
+[[pairs]]
+civilian = "火车"
+undercover = "动车"
+
+[[pairs]]
+civilian = "摩托车"
+undercover = "老头乐"
+
+[[pairs]]
+civilian = "校车"
+undercover = "大巴"
+
+[[pairs]]
+civilian = "缆车"
+undercover = "观光车"
+
+[[pairs]]
+civilian = "三轮车"
+undercover = "手推车"
+
+[[pairs]]
+civilian = "猫"
+undercover = "狗"
+
+[[pairs]]
+civilian = "狮子"
+undercover = "老虎"
+
+[[pairs]]
+civilian = "兔子"
+undercover = "松鼠"
+
+[[pairs]]
+civilian = "熊猫"
+undercover = "考拉"
+
+[[pairs]]
+civilian = "海豚"
+undercover = "鲸鱼"
+
+[[pairs]]
+civilian = "乌龟"
+undercover = "青蛙"
+
+[[pairs]]
+civilian = "长颈鹿"
+undercover = "斑马"
+
+[[pairs]]
+civilian = "猴子"
+undercover = "猩猩"
+
+[[pairs]]
+civilian = "鸽子"
+undercover = "麻雀"
+
+[[pairs]]
+civilian = "金鱼"
+undercover = "小孔雀鱼"
+
+[[pairs]]
+civilian = "电影"
+undercover = "电视剧"
+
+[[pairs]]
+civilian = "唱歌"
+undercover = "跳舞"
+
+[[pairs]]
+civilian = "魔术"
+undercover = "杂技"
+
+[[pairs]]
+civilian = "拼图"
+undercover = "积木"
+
+[[pairs]]
+civilian = "动画片"
+undercover = "漫画"
+
+[[pairs]]
+civilian = "讲故事"
+undercover = "说笑话"
+
+[[pairs]]
+civilian = "捉迷藏"
+undercover = "瞎子摸人"
+
+[[pairs]]
+civilian = "唱歌"
+undercover = "听音乐"
+
+[[pairs]]
+civilian = "看表演"
+undercover = "看比赛"
+
+[[pairs]]
+civilian = "春天"
+undercover = "秋天"
+
+[[pairs]]
+civilian = "夏天"
+undercover = "雨季"
+
+[[pairs]]
+civilian = "开学季"
+undercover = "毕业季"
+
+[[pairs]]
+civilian = "开花期"
+undercover = "落果期"
+
+[[pairs]]
+civilian = "手机"
+undercover = "平板"
+
+[[pairs]]
+civilian = "键盘"
+undercover = "鼠标"
+
+[[pairs]]
+civilian = "耳机"
+undercover = "音箱"
+
+[[pairs]]
+civilian = "相机"
+undercover = "摄像机"
+
+[[pairs]]
+civilian = "手表"
+undercover = "闹钟"
+
+[[pairs]]
+civilian = "打印机"
+undercover = "复印机"
+
+[[pairs]]
+civilian = "软盘"
+undercover = "DVD光碟"
+
+[[pairs]]
+civilian = "充电电池"
+undercover = "充电宝"
+
+[[pairs]]
+civilian = "智能遥控器"
+undercover = "游戏手柄"
+
+[[pairs]]
+civilian = "2B铅笔"
+undercover = "自动铅笔"
+
+[[pairs]]
+civilian = "橡皮"
+undercover = "修正带"
+
+[[pairs]]
+civilian = "尺子"
+undercover = "三角尺"
+
+[[pairs]]
+civilian = "书包"
+undercover = "文具盒"
+
+[[pairs]]
+civilian = "圆珠笔"
+undercover = "中性笔"
+
+[[pairs]]
+civilian = "卷笔刀"
+undercover = "削笔刀"
+
+[[pairs]]
+civilian = "胶水"
+undercover = "双面胶"
+
+[[pairs]]
+civilian = "作业本"
+undercover = "草稿本"
+
+[[pairs]]
+civilian = "牙刷"
+undercover = "梳子"
+
+[[pairs]]
+civilian = "毛巾"
+undercover = "浴巾"
+
+[[pairs]]
+civilian = "雨伞"
+undercover = "雨衣"
+
+[[pairs]]
+civilian = "拖鞋"
+undercover = "运动鞋"
+
+[[pairs]]
+civilian = "牙膏"
+undercover = "洗发水"
+
+[[pairs]]
+civilian = "脸盆"
+undercover = "水桶"
+
+[[pairs]]
+civilian = "枕头"
+undercover = "被子"
+
+[[pairs]]
+civilian = "肥皂"
+undercover = "洗手液"
+
+[[pairs]]
+civilian = "抹布"
+undercover = "海绵"
+
+[[pairs]]
+civilian = "白天"
+undercover = "黑夜"
+
+[[pairs]]
+civilian = "生日"
+undercover = "纪念日"
+
+[[pairs]]
+civilian = "开学第一天"
+undercover = "死期"
+
+[[pairs]]
+civilian = "早上"
+undercover = "清晨"
+
+[[pairs]]
+civilian = "未来"
+undercover = "明天"
+
+[[pairs]]
+civilian = "本命年"
+undercover = "幸运日"
+
+[[pairs]]
+civilian = "板擦"
+undercover = "白板"
+
+[[pairs]]
+civilian = "自习室"
+undercover = "图书馆"
+
+[[pairs]]
+civilian = "操场"
+undercover = "体育课"
+
+[[pairs]]
+civilian = "草稿本"
+undercover = "练习册"
+
+[[pairs]]
+civilian = "副班主任"
+undercover = "任课老师"
+
+[[pairs]]
+civilian = "升旗仪式"
+undercover = "班会"
+
+[[pairs]]
+civilian = "校服"
+undercover = "制服"
+
+[[pairs]]
+civilian = "校长"
+undercover = "年级主任"
+
+[[pairs]]
+civilian = "苹果"
+undercover = "梨"
+
+[[pairs]]
+civilian = "草莓"
+undercover = "樱桃"
+
+[[pairs]]
+civilian = "香蕉"
+undercover = "芒果"
+
+[[pairs]]
+civilian = "西瓜"
+undercover = "哈密瓜"
+
+[[pairs]]
+civilian = "葡萄"
+undercover = "蓝莓"
+
+[[pairs]]
+civilian = "橙子"
+undercover = "柚子"
+
+[[pairs]]
+civilian = "桃子"
+undercover = "李子"
+
+[[pairs]]
+civilian = "菠萝"
+undercover = "凤梨"
+
+[[pairs]]
+civilian = "山楂"
+undercover = "红枣"
+
+[[pairs]]
+civilian = "石榴"
+undercover = "百香果"
+
+[[pairs]]
+civilian = "老师"
+undercover = "宿管"
+
+[[pairs]]
+civilian = "警察"
+undercover = "军人"
+
+[[pairs]]
+civilian = "厨师"
+undercover = "面包师"
+
+[[pairs]]
+civilian = "空军"
+undercover = "飞行员"
+
+[[pairs]]
+civilian = "画家"
+undercover = "小说家"
+
+[[pairs]]
+civilian = "花匠"
+undercover = "园丁"
+
+[[pairs]]
+civilian = "新闻记者"
+undercover = "主持人"
+
+[[pairs]]
+civilian = "蜡像师"
+undercover = "雕刻家"
+
+[[pairs]]
+civilian = "理发师"
+undercover = "化妆师"
+
+[[pairs]]
+civilian = "快递员"
+undercover = "外卖员"
+
+[[pairs]]
+civilian = "律师"
+undercover = "辩论家"
+
+[[pairs]]
+civilian = "玩具商"
+undercover = "古董商"
+
+[[pairs]]
+civilian = "太阳"
+undercover = "地球"
+
+[[pairs]]
+civilian = "云朵"
+undercover = "白雾"
+
+[[pairs]]
+civilian = "彩虹"
+undercover = "晚霞"
+
+[[pairs]]
+civilian = "大海"
+undercover = "湖泊"
+
+[[pairs]]
+civilian = "小溪"
+undercover = "河流"
+
+[[pairs]]
+civilian = "高山"
+undercover = "丘陵"
+
+[[pairs]]
+civilian = "雷雨"
+undercover = "阵雨"
+
+[[pairs]]
+civilian = "森林"
+undercover = "草原"
+
+[[pairs]]
+civilian = "篮球"
+undercover = "足球"
+
+[[pairs]]
+civilian = "羽毛球"
+undercover = "网球"
+
+[[pairs]]
+civilian = "乒乓球"
+undercover = "排球"
+
+[[pairs]]
+civilian = "跑步"
+undercover = "跳绳"
+
+[[pairs]]
+civilian = "游泳"
+undercover = "潜水"
+
+[[pairs]]
+civilian = "滑冰"
+undercover = "滑雪"
+
+[[pairs]]
+civilian = "仰卧起坐"
+undercover = "做俯卧撑"
+
+[[pairs]]
+civilian = "踢毽子"
+undercover = "丢沙包"
+
+[[pairs]]
+civilian = "接力跑"
+undercover = "障碍跑"
+
+[[pairs]]
+civilian = "体操"
+undercover = "武术"
+
+[[pairs]]
+civilian = "倒立"
+undercover = "金鸡独立"
+
+[[pairs]]
+civilian = "汉堡"
+undercover = "披萨"
+
+[[pairs]]
+civilian = "米饭"
+undercover = "面条"
+
+[[pairs]]
+civilian = "饺子"
+undercover = "包子"
+
+[[pairs]]
+civilian = "馒头"
+undercover = "花卷"
+
+[[pairs]]
+civilian = "鸡蛋"
+undercover = "鹌鹑蛋"
+
+[[pairs]]
+civilian = "薯条"
+undercover = "薯片"
+
+[[pairs]]
+civilian = "蛋糕"
+undercover = "泡芙"
+
+[[pairs]]
+civilian = "巧克力"
+undercover = "牛奶糖"
+
+[[pairs]]
+civilian = "水果冰棒"
+undercover = "草莓刨冰"
+
+[[pairs]]
+civilian = "玉米"
+undercover = "红薯"
+
+[[pairs]]
+civilian = "牛肉"
+undercover = "猪肉"
+
+[[pairs]]
+civilian = "鸡翅"
+undercover = "鸡腿"
+
+[[pairs]]
+civilian = "汤圆"
+undercover = "饺子"
+
+[[pairs]]
+civilian = "咖啡"
+undercover = "奶茶"
+
+[[pairs]]
+civilian = "可乐"
+undercover = "雪碧"
+
+[[pairs]]
+civilian = "牛奶"
+undercover = "酸奶"
+
+[[pairs]]
+civilian = "豆浆"
+undercover = "豆奶"
+
+[[pairs]]
+civilian = "果汁"
+undercover = "汽水"
+
+[[pairs]]
+civilian = "热水"
+undercover = "温水"
+
+[[pairs]]
+civilian = "红茶"
+undercover = "绿茶"
+
+[[pairs]]
+civilian = "柠檬水"
+undercover = "蜂蜜水"
+
+[[pairs]]
+civilian = "椰子汁"
+undercover = "杏仁露"
+
+[[pairs]]
+civilian = "草莓奶昔"
+undercover = "水果冰沙"
+
+[[pairs]]
+civilian = "白酒"
+undercover = "白花蛇草水"
+
+[[pairs]]
+civilian = "功夫茶"
+undercover = "盖碗茶"

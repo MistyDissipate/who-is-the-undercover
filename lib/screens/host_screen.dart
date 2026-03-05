@@ -145,6 +145,8 @@ class _HostScreenState extends State<HostScreen> {
     }
 
     final colorScheme = Theme.of(context).colorScheme;
+  final orientation = MediaQuery.of(context).orientation;
+  final wordFontSize = orientation == Orientation.landscape ? 42.0 : 60.0;
     final player = players[currentIndex];
     final isLastPlayer = currentIndex >= players.length - 1;
 
@@ -152,49 +154,63 @@ class _HostScreenState extends State<HostScreen> {
       appBar: AppBar(
         title: Text('查看词汇'),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              '当前玩家: ${player.name}',
-              style: TextStyle(fontSize: 24),
-            ),
-            SizedBox(height: 40),
-            Container(
-              padding: EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                border: Border.all(color: colorScheme.outlineVariant),
-                borderRadius: BorderRadius.circular(10),
+      body: SafeArea(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: constraints.maxHeight - 32,
+                ),
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        '当前玩家: ${player.name}',
+                        style: TextStyle(fontSize: 24),
+                      ),
+                      SizedBox(height: 24),
+                      Container(
+                        padding: EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: colorScheme.outlineVariant),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Text(
+                          _isWordVisible ? player.word : '???',
+                          style: TextStyle(fontSize: wordFontSize, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      SizedBox(height: 20),
+                      if (!_isWordVisible)
+                        ElevatedButton(
+                          onPressed: () {
+                            setState(() {
+                              _isWordVisible = true;
+                            });
+                          },
+                          child: Text('点击查看词汇'),
+                        ),
+                      SizedBox(height: 32),
+                      ElevatedButton(
+                        onPressed: !_isWordVisible
+                            ? null
+                            : isLastPlayer
+                                ? _startGame
+                                : _nextPlayer,
+                        style: ElevatedButton.styleFrom(
+                          padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                        ),
+                        child: Text(isLastPlayer ? '开始游戏' : '确认，下一位'),
+                      ),
+                    ],
+                  ),
+                ),
               ),
-              child: Text(
-                _isWordVisible ? player.word : '???',
-                style: TextStyle(fontSize: 60, fontWeight: FontWeight.bold),
-              ),
-            ),
-            SizedBox(height: 20),
-            if (!_isWordVisible)
-              ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    _isWordVisible = true;
-                  });
-                },
-                child: Text('点击查看词汇'),
-              ),
-            SizedBox(height: 60),
-            ElevatedButton(
-              onPressed: !_isWordVisible
-                  ? null
-                  : isLastPlayer
-                      ? _startGame
-                      : _nextPlayer,
-              style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-              ),
-              child: Text(isLastPlayer ? '开始游戏' : '确认，下一位'),
-            ),
-          ],
+            );
+          },
         ),
       ),
     );
