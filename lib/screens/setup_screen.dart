@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:uncover_agent/screens/host_screen.dart';
 import 'package:uncover_agent/services/word_pool_service.dart';
+import 'package:uncover_agent/utils/app_logger.dart';
 import 'package:uncover_agent/widgets/setup/counter_setting_card.dart';
 import 'package:uncover_agent/widgets/setup/difficulty_filter_setting_card.dart';
 
@@ -36,10 +37,16 @@ class _SetupScreenState extends State<SetupScreen> {
   @override
   void initState() {
     super.initState();
+    AppLogger.info('Setup screen initialized', name: 'SetupScreen');
     _checkWordPool();
   }
 
   Future<void> _checkWordPool() async {
+    AppLogger.debug(
+      'Checking word pool (filter=$_enableDifficultyFilter, difficulty=${_selectedDifficulty ?? 'none'})',
+      name: 'SetupScreen',
+    );
+
     setState(() {
       _isCheckingWordPool = true;
       _wordPoolError = null;
@@ -58,6 +65,10 @@ class _SetupScreenState extends State<SetupScreen> {
         _enableDifficultyFilter = availability.enableDifficultyFilter;
         _selectedDifficulty = availability.selectedDifficulty;
       });
+      AppLogger.info(
+        'Word pool ready (options=${availability.options.length}, categories=${availability.enabledCategories.length}, difficulties=${availability.availableDifficulties.length})',
+        name: 'SetupScreen',
+      );
     } catch (error) {
       if (!mounted) return;
       setState(() {
@@ -66,6 +77,11 @@ class _SetupScreenState extends State<SetupScreen> {
             ? error.message
             : '词库加载失败，请检查 assets/wordbanks/index.json 或 assets/word_pairs.json';
       });
+      AppLogger.error(
+        'Word pool check failed',
+        name: 'SetupScreen',
+        error: error,
+      );
     }
   }
 
@@ -87,6 +103,11 @@ class _SetupScreenState extends State<SetupScreen> {
   }
 
   Future<void> _startGame() async {
+    AppLogger.info(
+      'Start game tapped (players=$playerNum, undercover=$undercoverNum, categories=${_enabledCategories().length}, difficulty=${_selectedDifficulty ?? 'none'})',
+      name: 'SetupScreen',
+    );
+
     setState(() {
       _isStarting = true;
     });
@@ -107,9 +128,11 @@ class _SetupScreenState extends State<SetupScreen> {
     setState(() {
       _isStarting = false;
     });
+    AppLogger.debug('Returned from host screen', name: 'SetupScreen');
   }
 
   void _onToggleDifficultyFilter(bool value) {
+    AppLogger.info('Toggle difficulty filter: $value', name: 'SetupScreen');
     setState(() {
       _enableDifficultyFilter = value;
       _selectedDifficulty ??= _enabledDifficulties().first;
@@ -118,6 +141,7 @@ class _SetupScreenState extends State<SetupScreen> {
   }
 
   void _onSelectDifficulty(String difficulty) {
+    AppLogger.info('Select difficulty: $difficulty', name: 'SetupScreen');
     setState(() {
       _selectedDifficulty = difficulty;
     });
@@ -128,6 +152,7 @@ class _SetupScreenState extends State<SetupScreen> {
     setState(() {
       playerNum--;
     });
+    AppLogger.debug('Player count decreased to $playerNum', name: 'SetupScreen');
   }
 
   void _increasePlayerCount() {
@@ -137,18 +162,24 @@ class _SetupScreenState extends State<SetupScreen> {
         undercoverNum = maxUndercover;
       }
     });
+    AppLogger.debug(
+      'Player count increased to $playerNum, undercover adjusted to $undercoverNum',
+      name: 'SetupScreen',
+    );
   }
 
   void _decreaseUndercoverCount() {
     setState(() {
       undercoverNum--;
     });
+    AppLogger.debug('Undercover count decreased to $undercoverNum', name: 'SetupScreen');
   }
 
   void _increaseUndercoverCount() {
     setState(() {
       undercoverNum++;
     });
+    AppLogger.debug('Undercover count increased to $undercoverNum', name: 'SetupScreen');
   }
 
   Widget _buildStartButton(bool canStart) {

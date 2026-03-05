@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/services.dart';
+import 'package:uncover_agent/utils/app_logger.dart';
 
 class WordPair {
   final String civilian;
@@ -73,14 +74,23 @@ class WordPoolService {
     Set<String>? difficulties,
   }) async {
     if (_cachedPairs == null) {
+      AppLogger.info('Loading word pairs from assets', name: 'WordPoolService');
       List<WordPair> pairs = [];
       try {
         pairs = await _loadFromSplitBanks();
-      } catch (_) {
+      } catch (error, stackTrace) {
+        AppLogger.warning('Split bank load failed, fallback to legacy word bank');
+        AppLogger.error(
+          'Split bank exception',
+          name: 'WordPoolService',
+          error: error,
+          stackTrace: stackTrace,
+        );
         pairs = [];
       }
 
       if (pairs.isEmpty) {
+        AppLogger.info('Using legacy word bank asset', name: 'WordPoolService');
         pairs = await _loadFromLegacyBank();
       }
 
@@ -89,6 +99,7 @@ class WordPoolService {
       }
 
       _cachedPairs = pairs;
+      AppLogger.info('Word pairs loaded: ${pairs.length}', name: 'WordPoolService');
     }
 
     var result = _cachedPairs!;
@@ -106,6 +117,11 @@ class WordPoolService {
     required bool enableDifficultyFilter,
     String? selectedDifficulty,
   }) async {
+    AppLogger.debug(
+      'Checking availability (filter=$enableDifficultyFilter, difficulty=${selectedDifficulty ?? 'none'})',
+      name: 'WordPoolService',
+    );
+
     final options = await loadWordBankOptions();
     final enabledCategories = options
         .where((item) => item.enabled && item.category.isNotEmpty)
@@ -157,6 +173,7 @@ class WordPoolService {
     if (_cachedOptions != null) return _cachedOptions!;
 
     try {
+      AppLogger.info('Loading word bank index.json', name: 'WordPoolService');
       final indexString = await rootBundle.loadString(_indexAssetPath);
       final dynamic decoded = jsonDecode(indexString);
       if (decoded is! Map<String, dynamic>) {
@@ -178,8 +195,16 @@ class WordPoolService {
       }).where((item) => item.path.isNotEmpty).toList();
 
       _cachedOptions = options;
+      AppLogger.info('Word bank options loaded: ${options.length}', name: 'WordPoolService');
       return _cachedOptions!;
-    } catch (_) {
+    } catch (error, stackTrace) {
+      AppLogger.warning('Word bank index unavailable, fallback to legacy categories');
+      AppLogger.error(
+        'Word bank index load exception',
+        name: 'WordPoolService',
+        error: error,
+        stackTrace: stackTrace,
+      );
       final legacyPairs = await _loadFromLegacyBank();
       final categories = legacyPairs
           .map((pair) => pair.category)
@@ -198,6 +223,10 @@ class WordPoolService {
             ),
           )
           .toList();
+      AppLogger.info(
+        'Generated options from legacy bank: ${_cachedOptions!.length}',
+        name: 'WordPoolService',
+      );
       return _cachedOptions!;
     }
   }
