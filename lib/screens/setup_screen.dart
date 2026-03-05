@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:uncover_agent/screens/host_screen.dart';
+import 'package:uncover_agent/services/issue_report_service.dart';
 import 'package:uncover_agent/services/word_pool_service.dart';
 import 'package:uncover_agent/utils/app_logger.dart';
 import 'package:uncover_agent/widgets/setup/counter_setting_card.dart';
@@ -18,6 +19,7 @@ class _SetupScreenState extends State<SetupScreen> {
   static const EdgeInsets _contentCardPadding = EdgeInsets.all(16);
   static const int _maxPlayers = 12;
   static const int _minUndercover = 1;
+  static const List<String> _issueTypeOptions = ['崩溃', '卡顿', '显示异常', '其他'];
 
   int get maxUndercover => (playerNum / 2).ceil() - 1;
   int get minPlayers => (undercoverNum * 2) + 1;
@@ -29,6 +31,7 @@ class _SetupScreenState extends State<SetupScreen> {
   int undercoverNum = 1;
   bool _isStarting = false;
   bool _isCheckingWordPool = true;
+  bool _isSendingIssueReport = false;
   String? _wordPoolError;
   List<WordBankOption> _wordBankOptions = [];
   bool _enableDifficultyFilter = false;
@@ -182,6 +185,109 @@ class _SetupScreenState extends State<SetupScreen> {
     AppLogger.debug('Undercover count increased to $undercoverNum', name: 'SetupScreen');
   }
 
+  Future<void> _sendIssueReport() async {
+    if (_isSendingIssueReport) return;
+
+    final descriptionController = TextEditingController();
+    var selectedIssueType = _issueTypeOptions.last;
+
+    final reportInput = await showDialog<_IssueReportInput>(
+          context: context,
+          builder: (context) {
+            return StatefulBuilder(
+              builder: (context, setDialogState) {
+                return AlertDialog(
+                  title: const Text('发送问题日志'),
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('将打开邮箱并自动填入最近日志，你可以确认后发送。'),
+                      const SizedBox(height: 12),
+                      DropdownButtonFormField<String>(
+                        value: selectedIssueType,
+                        decoration: const InputDecoration(
+                          labelText: '问题类型',
+                          border: OutlineInputBorder(),
+                        ),
+                        items: _issueTypeOptions
+                            .map((type) => DropdownMenuItem<String>(
+                                  value: type,
+                                  child: Text(type),
+                                ))
+                            .toList(),
+                        onChanged: (value) {
+                          if (value == null) return;
+                          setDialogState(() {
+                            selectedIssueType = value;
+                          });
+                        },
+                      ),
+                      const SizedBox(height: 12),
+                      TextField(
+                        controller: descriptionController,
+                        maxLines: 4,
+                        minLines: 3,
+                        textInputAction: TextInputAction.newline,
+                        decoration: const InputDecoration(
+                          hintText: '可选：请描述问题发生时你做了什么',
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                    ],
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: const Text('取消'),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(
+                        _IssueReportInput(
+                          issueType: selectedIssueType,
+                          description: descriptionController.text.trim(),
+                        ),
+                      ),
+                      child: const Text('继续'),
+                    ),
+                  ],
+                );
+              },
+            );
+          },
+        );
+
+    descriptionController.dispose();
+
+    if (reportInput == null || !mounted) return;
+
+    setState(() {
+      _isSendingIssueReport = true;
+    });
+
+    AppLogger.info(
+      'User triggered issue report email (type=${reportInput.issueType})',
+      name: 'SetupScreen',
+    );
+    final success = await IssueReportService.sendLogsByEmail(
+      userDescription: reportInput.description,
+      issueType: reportInput.issueType,
+    );
+
+    if (!mounted) return;
+    setState(() {
+      _isSendingIssueReport = false;
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          success ? '已打开邮箱，请确认后发送。' : '未找到可用邮箱客户端，请稍后重试。',
+        ),
+      ),
+    );
+  }
+
   Widget _buildStartButton(bool canStart) {
     return SizedBox(
       height: 48,
@@ -291,6 +397,19 @@ class _SetupScreenState extends State<SetupScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('游戏设置'),
+        actions: [
+          IconButton(
+            onPressed: _isSendingIssueReport ? null : _sendIssueReport,
+            tooltip: '反馈问题',
+            icon: _isSendingIssueReport
+                ? const SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Icon(Icons.bug_report_outlined),
+          ),
+        ],
       ),
       bottomNavigationBar: SafeArea(
         top: false,
@@ -334,4 +453,14 @@ class _SetupScreenState extends State<SetupScreen> {
       ),
     );
   }
+}
+
+class _IssueReportInput {
+  final String issueType;
+  final String description;
+
+  const _IssueReportInput({
+    required this.issueType,
+    required this.description,
+  });
 }
