@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uncover_agent/screens/host_screen.dart';
 import 'package:uncover_agent/screens/word_bank_manage_screen.dart';
 import 'package:uncover_agent/services/issue_report_service.dart';
+import 'package:uncover_agent/services/update_service.dart';
 import 'package:uncover_agent/services/word_pool_service.dart';
 import 'package:uncover_agent/utils/app_logger.dart';
 import 'package:uncover_agent/widgets/setup/counter_setting_card.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SetupScreen extends StatefulWidget {
   const SetupScreen({super.key});
@@ -20,6 +23,8 @@ class _SetupScreenState extends State<SetupScreen> {
   static const int _maxPlayers = 12;
   static const int _minUndercover = 1;
   static const List<String> _issueTypeOptions = ['崩溃', '卡顿', '显示异常', '其他'];
+  static const String _lastAutoUpdateCheckAtKey = 'last_auto_update_check_at';
+  static const Duration _autoUpdateCheckCooldown = Duration(hours: 6);
 
   int get maxUndercover => (playerNum / 2).ceil() - 1;
   int get minPlayers => (undercoverNum * 2) + 1;
@@ -28,6 +33,7 @@ class _SetupScreenState extends State<SetupScreen> {
   bool _isStarting = false;
   bool _isCheckingWordPool = true;
   bool _isSendingIssueReport = false;
+  bool _isCheckingUpdate = false;
   bool _revealRoleOnElimination = true;
   String? _wordPoolError;
   List<WordBank> _wordBanks = [];
@@ -38,6 +44,26 @@ class _SetupScreenState extends State<SetupScreen> {
     super.initState();
     AppLogger.info('Setup screen initialized', name: 'SetupScreen');
     _loadWordBanks();
+
+    if (UpdateService.isConfigured) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        _maybeAutoCheckForUpdates();
+      });
+    }
+  }
+
+  Future<void> _maybeAutoCheckForUpdates() async {
+    final prefs = await SharedPreferences.getInstance();
+    final lastCheckAt = prefs.getInt(_lastAutoUpdateCheckAtKey) ?? 0;
+    final now = DateTime.now().millisecondsSinceEpoch;
+
+    if (now - lastCheckAt < _autoUpdateCheckCooldown.inMilliseconds) {
+      return;
+    }
+
+    await prefs.setInt(_lastAutoUpdateCheckAtKey, now);
+    await _checkForUpdates(silentIfLatest: true, silentOnError: true);
   }
 
   Future<void> _loadWordBanks() async {
@@ -268,6 +294,145 @@ class _SetupScreenState extends State<SetupScreen> {
     );
   }
 
+  Future<void> _checkForUpdates({
+    bool silentIfLatest = false,
+    bool silentOnError = false,
+  }) async {
+    if (_isCheckingUpdate) return;
+
+    setState(() {
+      _isCheckingUpdate = true;
+    });
+
+    try {
+      final updateInfo = await UpdateService.checkForUpdates();
+      if (!mounted) return;
+
+      if (!updateInfo.hasUpdate) {
+        if (!silentIfLatest) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('当前已是最新版本 v${updateInfo.currentVersion}')),
+          );
+        }
+        return;
+      }
+
+      await _showUpdateDialog(updateInfo);
+    } catch (error, stackTrace) {
+      AppLogger.error(
+        'Update check failed',
+        name: 'SetupScreen',
+        error: error,
+        stackTrace: stackTrace,
+      );
+
+      if (!mounted) return;
+      if (silentOnError) {
+        return;
+      }
+
+      if (error is UpdateCheckException && error.isRateLimited) {
+        await _showRateLimitedDialog(error);
+        return;
+      }
+
+      final errorText = error is UpdateCheckException ? error.message : '检查更新失败，请稍后重试。';
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(errorText)));
+    } finally {
+      if (!mounted) return;
+      setState(() {
+        _isCheckingUpdate = false;
+      });
+    }
+  }
+
+  Future<void> _showRateLimitedDialog(UpdateCheckException error) async {
+    await showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('检查更新过于频繁'),
+        content: const Text('GitHub 接口当前限流，暂时无法直接获取最新版本信息。你可以先前往发布页手动查看。'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('知道了'),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.of(context).pop();
+              final uri = Uri.parse(error.releasePageUrl ?? UpdateService.releaseLatestPageUrl);
+              final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
+              if (!mounted) return;
+              if (!launched) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('无法打开发布页，请稍后重试。')),
+                );
+              }
+            },
+            child: const Text('打开发布页'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _showUpdateDialog(UpdateInfo updateInfo) async {
+    final notes = updateInfo.releaseNotes.trim();
+
+    await showDialog<void>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('发现新版本'),
+          content: SizedBox(
+            width: 420,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('当前版本：v${updateInfo.currentVersion}'),
+                Text('最新版本：v${updateInfo.latestVersion}'),
+                const SizedBox(height: 12),
+                const Text('更新说明：'),
+                const SizedBox(height: 6),
+                SizedBox(
+                  height: 220,
+                  child: SingleChildScrollView(
+                    child: Text(
+                      notes.isEmpty ? '本次发布未填写更新说明。' : notes,
+                      style: const TextStyle(fontSize: 13),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('稍后'),
+            ),
+            TextButton(
+              onPressed: () async {
+                Navigator.of(context).pop();
+                final targetUrl = updateInfo.downloadUrl ?? updateInfo.releasePageUrl;
+                final uri = Uri.parse(targetUrl);
+                final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
+                if (!mounted) return;
+                if (!launched) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('无法打开更新链接，请稍后重试。')),
+                  );
+                }
+              },
+              child: const Text('前往更新'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Widget _buildStartButton(bool canStart) {
     return SizedBox(
       height: 48,
@@ -470,6 +635,17 @@ class _SetupScreenState extends State<SetupScreen> {
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
                 : const Icon(Icons.bug_report_outlined),
+          ),
+          IconButton(
+            onPressed: _isCheckingUpdate ? null : _checkForUpdates,
+            tooltip: '检查更新',
+            icon: _isCheckingUpdate
+                ? const SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Icon(Icons.system_update_alt_outlined),
           ),
         ],
       ),
