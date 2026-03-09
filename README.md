@@ -131,7 +131,7 @@ flutter run
 ```
 
 ### 构建
-- Android：`flutter build apk --release`
+- Android：`flutter build apk --release --split-per-abi --dart-define=GITHUB_REPO=MistyDissipate/who-is-the-undercover`
 - iOS：`flutter build ios --release`
 
 ---

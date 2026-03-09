@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:uncover_agent/utils/app_logger.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class UpdateInfo {
   final bool hasUpdate;
@@ -50,6 +51,16 @@ class UpdateService {
 
   static String get releaseLatestPageUrl =>
       'https://github.com/$_githubRepo/releases/latest';
+
+  static Future<bool> openReleasePage({Uri? releasePageUriOverride}) async {
+    final uri = releasePageUriOverride ??
+        (isConfigured ? Uri.parse(releaseLatestPageUrl) : null);
+    if (uri == null) {
+      return false;
+    }
+
+    return launchUrl(uri, mode: LaunchMode.externalApplication);
+  }
 
   static Future<UpdateInfo> checkForUpdates() async {
     final packageInfo = await PackageInfo.fromPlatform();
